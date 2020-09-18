@@ -1,21 +1,27 @@
-/* GLOBALS */
+// GLOBAL
 let cars: Car[] = []; // Cars collection
 
 // DOM REFS
-const formCreateCar = document.querySelector("form") as HTMLFormElement; // (!) =>  not null && HTMLFormElement
-const inputPlate = document.querySelector('[name="input_plate"]') as HTMLFormElement;
-const inputBrand = document.querySelector('[name="input_brand"]') as HTMLFormElement;
-const inputColor = document.querySelector('[name="input_color"]') as HTMLFormElement;
+enum names {
+	"form_create_car" = 0,
+	"input_plate" = 0,
+	"input_brand" = 1,
+	"input_color" = 2,
+}
+const formCreateCar = document.forms[names.form_create_car] as HTMLFormElement;
+const inputPlate = formCreateCar.elements[names.input_plate] as HTMLInputElement;
+const inputBrand = formCreateCar.elements[names.input_brand] as HTMLInputElement;
+const inputColor = formCreateCar.elements[names.input_color] as HTMLInputElement;
 
-/* EVENTS */
+// EVENTS
 formCreateCar.addEventListener("submit", function (e) {
 	createCar(e, inputPlate.value, inputBrand.value, inputColor.value);
 });
 
-/* AUX */
+// AUX
 function createCar(e: Event, plate: string, brand: string, color: string) {
-	const carInfo = document.getElementById("carInfo") as HTMLDivElement;
-	const carInfoSpans = document.querySelectorAll("#carInfo p span") as NodeListOf<HTMLDivElement>;
+	const carInfo = document.getElementById("carInfo") as HTMLElement;
+	const carInfoSpans = document.querySelectorAll("#carInfo p span") as NodeListOf<HTMLSpanElement>;
 	const car = new Car(plate, color, brand);
 	car.addWheel(new Wheel(16, "Firestone"));
 
@@ -26,9 +32,9 @@ function createCar(e: Event, plate: string, brand: string, color: string) {
 	carInfoSpans[1].textContent = car.plate;
 	carInfoSpans[2].textContent = car.brand;
 	carInfoSpans[3].textContent = car.color;
-	carInfoSpans[4].textContent = `${+car.wheels[car.wheels.length - 1].diameter} inches. ${
-		car.wheels[car.wheels.length - 1].brand
-	}`;
+	carInfoSpans[4].textContent = `
+		${+car.wheels[car.wheels.length - 1].diameter} inches.
+		${car.wheels[car.wheels.length - 1].brand}`;
 
 	carInfo.classList.remove("is-none"); // CSS overwrite
 
