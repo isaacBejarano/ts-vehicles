@@ -15,30 +15,22 @@ formCreateCar.addEventListener("submit", function (e) {
 /* AUX */
 function createCar(e: Event, plate: string, brand: string, color: string) {
 	const carInfo = document.getElementById("carInfo") as HTMLDivElement;
+	const carInfoSpans = document.querySelectorAll("#carInfo p span") as NodeListOf<HTMLDivElement>;
 	const car = new Car(plate, color, brand);
 	car.addWheel(new Wheel(16, "Firestone"));
 
-	// car of cars
-	cars.push(car);
+	cars.push(car); // car of cars
 
-	// toString
-	carInfo.innerHTML = `
-		<i class="fas fa-car"></i>
-		CAR: <span class="text-dark">${cars.indexOf(car) + 1}</span> </br>
-		<i class="far fa-address-card"></i>
-		PLATE: <span class="text-dark">${car.plate}</span> </br>
-		<i class="fas fa-palette"></i>
-		COLOR: <span class="text-dark">${car.color}</span> </br>
-		<i class="fas fa-signature"></i>
-		BRAND: <span class="text-dark">${car.brand}</span> </br>
-		<i class="fas fa-dot-circle"></i>
-		WHEELS: <span class="text-dark">
-			${+car.wheels[car.wheels.length - 1].diameter} inches.
-			${car.wheels[car.wheels.length - 1].brand}			
-			</span> </br>
-	`;
+	// toString -> <span>
+	carInfoSpans[0].textContent = `${cars.indexOf(car) + 1}`;
+	carInfoSpans[1].textContent = car.plate;
+	carInfoSpans[2].textContent = car.brand;
+	carInfoSpans[3].textContent = car.color;
+	carInfoSpans[4].textContent = `${+car.wheels[car.wheels.length - 1].diameter} inches. ${
+		car.wheels[car.wheels.length - 1].brand
+	}`;
 
-	carInfo.classList.remove("is-none");
+	carInfo.classList.remove("is-none"); // CSS overwrite
 
 	// prevent submit
 	e.preventDefault();

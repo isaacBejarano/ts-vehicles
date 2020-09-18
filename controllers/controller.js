@@ -13,13 +13,17 @@ formCreateCar.addEventListener("submit", function (e) {
 /* AUX */
 function createCar(e, plate, brand, color) {
     var carInfo = document.getElementById("carInfo");
+    var carInfoSpans = document.querySelectorAll("#carInfo p span");
     var car = new Car(plate, color, brand);
     car.addWheel(new Wheel(16, "Firestone"));
-    // car of cars
-    cars.push(car);
-    // toString
-    carInfo.innerHTML = "\n\t\t<i class=\"fas fa-car\"></i>\n\t\tCAR: <span class=\"text-dark\">" + (cars.indexOf(car) + 1) + "</span> </br>\n\t\t<i class=\"far fa-address-card\"></i>\n\t\tPLATE: <span class=\"text-dark\">" + car.plate + "</span> </br>\n\t\t<i class=\"fas fa-palette\"></i>\n\t\tCOLOR: <span class=\"text-dark\">" + car.color + "</span> </br>\n\t\t<i class=\"fas fa-signature\"></i>\n\t\tBRAND: <span class=\"text-dark\">" + car.brand + "</span> </br>\n\t\t<i class=\"fas fa-dot-circle\"></i>\n\t\tWHEELS: <span class=\"text-dark\">\n\t\t\t" + +car.wheels[car.wheels.length - 1].diameter + " inches.\n\t\t\t" + car.wheels[car.wheels.length - 1].brand + "\t\t\t\n\t\t\t</span> </br>\n\t";
-    carInfo.classList.remove("is-none");
+    cars.push(car); // car of cars
+    // toString -> <span>
+    carInfoSpans[0].textContent = "" + (cars.indexOf(car) + 1);
+    carInfoSpans[1].textContent = car.plate;
+    carInfoSpans[2].textContent = car.brand;
+    carInfoSpans[3].textContent = car.color;
+    carInfoSpans[4].textContent = +car.wheels[car.wheels.length - 1].diameter + " inches. " + car.wheels[car.wheels.length - 1].brand;
+    carInfo.classList.remove("is-none"); // CSS overwrite
     // prevent submit
     e.preventDefault();
     e.stopPropagation();
