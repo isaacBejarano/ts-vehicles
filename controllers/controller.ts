@@ -1,17 +1,19 @@
 // GLOBAL
 let cars: Car[] = []; // Cars collection
 
-// DOM REFS
-enum names {
+// REFS
+enum Forms {
 	"form_create_car" = 0,
+}
+enum Elements {
 	"input_plate" = 0,
 	"input_brand" = 1,
 	"input_color" = 2,
 }
-const formCreateCar = document.forms[names.form_create_car] as HTMLFormElement;
-const inputPlate = formCreateCar.elements[names.input_plate] as HTMLInputElement;
-const inputBrand = formCreateCar.elements[names.input_brand] as HTMLInputElement;
-const inputColor = formCreateCar.elements[names.input_color] as HTMLInputElement;
+const formCreateCar = document.forms[Forms.form_create_car] as HTMLFormElement;
+const inputPlate = formCreateCar.elements[Elements.input_plate] as HTMLInputElement;
+const inputBrand = formCreateCar.elements[Elements.input_brand] as HTMLInputElement;
+const inputColor = formCreateCar.elements[Elements.input_color] as HTMLInputElement;
 
 // EVENTS
 formCreateCar.addEventListener("submit", function (e) {
