@@ -1,63 +1,138 @@
-// GLOBAL
-let cars: Car[] = []; // Cars collection
+/* GLOBAL */
 
-// REFS
+let cars: Car[] = []; // collection of Car
+
 enum Forms {
 	"form_create_car" = 0,
 	"form_add_wheels" = 1,
 }
-enum Elements {
+
+enum inputCar {
 	"input_plate" = 0,
 	"input_brand" = 1,
 	"input_color" = 2,
 }
+
+enum inputWheels {
+	"wheel_FL_diameter" = 0,
+	"wheel_FL_brand" = 1,
+	"wheel_FR_diameter" = 2,
+	"wheel_FR_brand" = 3,
+	"wheel_RL_diameter" = 4,
+	"wheel_RL_brand" = 5,
+	"wheel_RR_diameter" = 6,
+	"wheel_RR_brand" = 7,
+}
+
+const formCreateCar = document.forms[Forms.form_create_car]; // REF <form> Cars
+const formAddWheels = document.forms[Forms.form_add_wheels];// REF <form> Wheels
+
+/* OUTLET */
+
 const carInfo = document.getElementById("carInfo") as HTMLElement;
-const formCreateCar = document.forms[Forms.form_create_car] as HTMLFormElement;
-const formAddWheels = document.forms[Forms.form_add_wheels] as HTMLFormElement;
-const inputPlate = formCreateCar.elements[Elements.input_plate] as HTMLInputElement;
-const inputBrand = formCreateCar.elements[Elements.input_brand] as HTMLInputElement;
-const inputColor = formCreateCar.elements[Elements.input_color] as HTMLInputElement;
+const carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span") as NodeListOf<HTMLSpanElement>;
 
-// EVENTS
-formCreateCar.addEventListener("submit", function (e) {
-	createCar(inputPlate.value, inputBrand.value, inputColor.value);
-	formPreventAndReset(e, this);
-});
-formAddWheels.addEventListener("submit", function (e) {
-	formCreateCar.classList.remove("is-none"); // CSS
-	formAddWheels.classList.add("is-none"); // CSS
-	formPreventAndReset(e, this);
-});
+/* EVENTS */
 
-// AUX
-function createCar(plate: string, brand: string, color: string) {
+formCreateCar.addEventListener("submit", createCar);
+formAddWheels.addEventListener("submit", addWheelsToCurrentCar);
+
+/* LIB */
+
+function createCar(e: Event): void {
+	// outlet
 	const carInfoSpans = document.querySelectorAll("#carInfo p span") as NodeListOf<HTMLSpanElement>;
+	// inputs
+	const inputPlate = formCreateCar.elements[inputCar.input_plate] as HTMLInputElement;
+	const inputBrand = formCreateCar.elements[inputCar.input_brand] as HTMLInputElement;
+	const inputColor = formCreateCar.elements[inputCar.input_color] as HTMLInputElement;
+
+	// (pre) "Brand" style -> Case
+	const plate: string = inputPlate.value.toUpperCase();
+	const brand: string = FirstUpperCase(inputBrand.value);
+	const color: string = FirstUpperCase(inputColor.value);
+
+	// new vehicle
 	const car = new Car(plate, color, brand);
 
-	car.addWheel(new Wheel(16, "Firestone"));
-
-	cars.push(car); // car of cars
+	// car of cars
+	cars.push(car);
 
 	// toString -> <span>
 	carInfoSpans[0].textContent = `${cars.indexOf(car) + 1}`;
 	carInfoSpans[1].textContent = car.plate;
 	carInfoSpans[2].textContent = car.brand;
 	carInfoSpans[3].textContent = car.color;
-	carInfoSpans[4].textContent = `
-		${+car.wheels[car.wheels.length - 1].diameter} inches.
-		${car.wheels[car.wheels.length - 1].brand}`;
+
+	// toString -> <ul><li> -> clear previous wheels
+	for (let i = 0; i < carInfoUlLiSpans.length; i++) {
+		carInfoUlLiSpans[i].textContent = ``;
+	}
 
 	// CSS
 	carInfo.classList.remove("is-none");
 	formCreateCar.classList.add("is-none");
 	formAddWheels.classList.remove("is-none");
+
+	// prevent submit + clear input
+	formPreventAndReset(e, formCreateCar);
 }
 
-function formPreventAndReset(e: Event, ref: HTMLFormElement) {
-	// prevent submit
+function addWheelsToCurrentCar(e: Event): void {
+	// wheel 1
+	const inputWheelBrandFL = formAddWheels.elements[inputWheels.wheel_FL_brand] as HTMLInputElement;
+	const inputWheelDiameterFL = formAddWheels.elements[inputWheels.wheel_FL_diameter] as HTMLInputElement;
+	// wheel 2
+	const inputWheelDiameterFR = formAddWheels.elements[inputWheels.wheel_FR_diameter] as HTMLInputElement;
+	const inputWheelBrandFR = formAddWheels.elements[inputWheels.wheel_FR_brand] as HTMLInputElement;
+	// wheel 3
+	const inputWheelDiameterRL = formAddWheels.elements[inputWheels.wheel_RL_diameter] as HTMLInputElement;
+	const inputWheelBrandRL = formAddWheels.elements[inputWheels.wheel_RL_brand] as HTMLInputElement;
+	// wheel 4
+	const inputWheelDiameterRR = formAddWheels.elements[inputWheels.wheel_RR_diameter] as HTMLInputElement;
+	const inputWheelBrandRR = formAddWheels.elements[inputWheels.wheel_RR_brand] as HTMLInputElement;
+
+	// (pre) "Brand" style -> Case
+	const brandFL = FirstUpperCase(inputWheelBrandFL.value);
+	const brandFR = FirstUpperCase(inputWheelBrandFR.value);
+	const brandRL = FirstUpperCase(inputWheelBrandRL.value);
+	const brandRR = FirstUpperCase(inputWheelBrandRR.value);
+
+	// .addWheel() <- (pre) +"Diameter" is int
+	cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterFL.value, brandFL));
+	cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterFR.value, brandFR));
+	cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterRL.value, brandRL));
+	cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterRR.value, brandRR));
+
+	// toString -> <ul><li>
+	for (let i = 0; i < carInfoUlLiSpans.length; i++) {
+		carInfoUlLiSpans[i].textContent = `
+			${cars[cars.length - 1].wheels[i].brand}
+			${cars[cars.length - 1].wheels[i].diameter}"`;
+	}
+
+	// CSS
+	formCreateCar.classList.toggle("is-none");
+	formAddWheels.classList.toggle("is-none");
+
+	// prevent submit + clear input
+	formPreventAndReset(e, formAddWheels);
+}
+
+function showListOfVehicles(): void {
+	// ON
+	// OFF
+}
+
+// AUX
+
+function FirstUpperCase(value: string): string {
+	return value.substr(0, 1).toUpperCase() + value.substr(1, value.length - 1).toLowerCase();
+}
+
+function formPreventAndReset(e: Event, ref: HTMLFormElement): void {
 	e.preventDefault();
 	e.stopPropagation();
 
-	// clear input
-	ref.reset();
+	ref.reset(); // clear input
 }

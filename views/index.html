@@ -32,6 +32,9 @@
 		form {
 			background-color: aliceblue;
 		}
+		ul {
+			list-style: none;
+		}
 		.is-none {
 			display: none;
 		}
@@ -39,19 +42,36 @@
 </head>
 
 <body>
-	<hgroup class="mx-auto bg-primary text-light p-4 mt-lg-5">
-		<h1 class="display-4">Vehicles</h1>
-		<h2 class="font-weight-lighter">OOP - Typescript</h2>
-	</hgroup>
+	<header>
+		<hgroup class="row mx-auto bg-primary text-light mt-lg-5">
+			<h1 class="col-9 display-4 pt-4 pl-4">Vehicles</h1>
+			<div class="col-3 d-flex justify-content-end p-0">
+				<button
+					name="btn_show_all"
+					class="align-self-start btn btn-sm btn-outline-light mt-2 mr-2 mt-sm-4 mr-sm-4"
+					type="button"
+					onclick="console.log(cars)"
+				>
+					<i class="fas fa-list-ul mr-1"></i>
+					List
+				</button>
+			</div>
+			<h2 class="col-12 pb-4 pl-4 font-weight-lighter">OOP - Typescript</h2>
+		</hgroup>
+	</header>
 
 	<main class="mx-auto">
 		<!-- OUTLET -->
 		<section id="carInfo" class="is-none my-0 p-4 mx-auto bg-light border border-top-0 border-primary text-primary">
+			<!-- Car # -->
 			<p class="my-1">
 				<i class="fas fa-car"></i>
-				CAR:
+				CAR #
 				<span class="text-dark"></span>
 			</p>
+			<div class="border border-bottom my-2"></div>
+
+			<!-- Car main -->
 			<p class="my-1">
 				<i class="far fa-address-card"></i>
 				PLATE:
@@ -67,12 +87,45 @@
 				COLOR:
 				<span class="text-dark"></span>
 			</p>
+			<div class="border border-bottom my-2"></div>
+
+			<!-- Car Wheels -->
 			<p class="my-1">
 				<i class="fas fa-dot-circle"></i>
-				WHEELS:
+				WHEELS
 				<span class="text-dark"></span>
 			</p>
+
+			<ul class="my-1">
+				<li>
+					<i class="fas fa-caret-up text-primary"></i>
+					<i class="fas fa-angle-left text-primary"></i>
+					FL:
+					<span class="text-dark"></span>
+				</li>
+				<li>
+					<i class="fas fa-caret-up text-primary"></i>
+					<i class="fas fa-angle-right text-primary"></i>
+					FR:
+					<span class="text-dark"></span>
+				</li>
+				<li>
+					<i class="fas fa-caret-down text-primary"></i>
+					<i class="fas fa-angle-left text-primary"></i>
+					RL:
+					<span class="text-dark"></span>
+				</li>
+				<li>
+					<i class="fas fa-caret-down text-primary"></i>
+					<i class="fas fa-angle-right text-primary"></i>
+					RR:
+					<span class="text-dark"></span>
+				</li>
+			</ul>
 		</section>
+
+		<!-- LIST: ON  -> inject [0] + append DOM after + inject [...n] -->
+		<!-- LIST: OFF -> clear all appended DOM - fisrt + .is-none -->
 
 		<!-- FORM 1 / Plate / Brand / Color -->
 		<form name="form_create_car" action="#" class="border border-primary border-top-0 rounded-bottom p-4 m-0">
@@ -98,7 +151,7 @@
 					<input name="input_color" id="color" class="form-control" type="text" />
 				</div>
 
-				<!-- Submit -->
+				<!-- submit -->
 				<div class="form-group col-6 col-sm-3 d-flex align-items-end justify-content-center">
 					<button name="btn_create_car" class="btn btn-outline-primary my-0" type="submit">Create Car</button>
 				</div>
@@ -118,12 +171,20 @@
 				<div class="col-12 col-sm-6 p-3 p-sm-4">
 					<legend>
 						<span class="text-primary">Front Left</span>
-						<i class="fas fa-angle-left text-primary"></i>
 						<i class="fas fa-caret-up text-primary"></i>
+						<i class="fas fa-angle-left text-primary"></i>
 					</legend>
 					<div class="form-group">
-						<label for="wheel_FL_diameter">Diametre (inches)</label>
-						<input name="wheel_FL_diameter" id="wheel_FL_diameter" class="form-control" type="text" />
+						<label for="wheel_FL_diameter">Diameter (inches)</label>
+						<input
+							name="wheel_FL_diameter"
+							id="wheel_FL_diameter"
+							class="form-control"
+							type="number"
+							min="0"
+							step="0.1"
+							inputmode="decimal"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="wheel_FL_brand">Brand</label>
@@ -138,8 +199,16 @@
 						<i class="fas fa-angle-right text-primary"></i>
 					</legend>
 					<div class="form-group">
-						<label for="wheel_FR_diameter">Diametre (inches)</label>
-						<input name="wheel_FR_diameter" id="wheel_FR_diameter" class="form-control" type="text" />
+						<label for="wheel_FR_diameter">Diameter (inches)</label>
+						<input
+							name="wheel_FR_diameter"
+							id="wheel_FR_diameter"
+							class="form-control"
+							type="number"
+							min="0"
+							step="0.1"
+							inputmode="decimal"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="wheel_FR_brand">Brand</label>
@@ -154,12 +223,20 @@
 				<div class="col-12 col-sm-6 p-3 p-sm-4">
 					<legend>
 						<span class="text-primary">Rear Left</span>
-						<i class="fas fa-angle-left text-primary"></i>
 						<i class="fas fa-caret-down text-primary"></i>
+						<i class="fas fa-angle-left text-primary"></i>
 					</legend>
 					<div class="form-group">
-						<label for="wheel_RL_diameter">Diametre (inches)</label>
-						<input name="wheel_RL_diameter" id="wheel_RL_diameter" class="form-control" type="text" />
+						<label for="wheel_RL_diameter">Diameter (inches)</label>
+						<input
+							name="wheel_RL_diameter"
+							id="wheel_RL_diameter"
+							class="form-control"
+							type="number"
+							min="0"
+							step="0.1"
+							inputmode="decimal"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="wheel_RL_brand">Brand</label>
@@ -174,8 +251,16 @@
 						<i class="fas fa-angle-right text-primary"></i>
 					</legend>
 					<div class="form-group">
-						<label for="wheel_RR_diameter">Diametre (inches)</label>
-						<input name="wheel_RR_diameter" id="wheel_RR_diameter" class="form-control" type="text" />
+						<label for="wheel_RR_diameter">Diameter (inches)</label>
+						<input
+							name="wheel_RR_diameter"
+							id="wheel_RR_diameter"
+							class="form-control"
+							type="number"
+							min="0"
+							step="0.1"
+							inputmode="decimal"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="wheel_RR_brand">Brand</label>

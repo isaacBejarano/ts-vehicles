@@ -1,55 +1,111 @@
 "use strict";
-// GLOBAL
-var cars = []; // Cars collection
-// REFS
+/* GLOBAL */
+var cars = []; // collection of Car
 var Forms;
 (function (Forms) {
     Forms[Forms["form_create_car"] = 0] = "form_create_car";
     Forms[Forms["form_add_wheels"] = 1] = "form_add_wheels";
 })(Forms || (Forms = {}));
-var Elements;
-(function (Elements) {
-    Elements[Elements["input_plate"] = 0] = "input_plate";
-    Elements[Elements["input_brand"] = 1] = "input_brand";
-    Elements[Elements["input_color"] = 2] = "input_color";
-})(Elements || (Elements = {}));
+var inputCar;
+(function (inputCar) {
+    inputCar[inputCar["input_plate"] = 0] = "input_plate";
+    inputCar[inputCar["input_brand"] = 1] = "input_brand";
+    inputCar[inputCar["input_color"] = 2] = "input_color";
+})(inputCar || (inputCar = {}));
+var inputWheels;
+(function (inputWheels) {
+    inputWheels[inputWheels["wheel_FL_diameter"] = 0] = "wheel_FL_diameter";
+    inputWheels[inputWheels["wheel_FL_brand"] = 1] = "wheel_FL_brand";
+    inputWheels[inputWheels["wheel_FR_diameter"] = 2] = "wheel_FR_diameter";
+    inputWheels[inputWheels["wheel_FR_brand"] = 3] = "wheel_FR_brand";
+    inputWheels[inputWheels["wheel_RL_diameter"] = 4] = "wheel_RL_diameter";
+    inputWheels[inputWheels["wheel_RL_brand"] = 5] = "wheel_RL_brand";
+    inputWheels[inputWheels["wheel_RR_diameter"] = 6] = "wheel_RR_diameter";
+    inputWheels[inputWheels["wheel_RR_brand"] = 7] = "wheel_RR_brand";
+})(inputWheels || (inputWheels = {}));
+var formCreateCar = document.forms[Forms.form_create_car]; // REF <form> Cars
+var formAddWheels = document.forms[Forms.form_add_wheels]; // REF <form> Wheels
+/* OUTLET */
 var carInfo = document.getElementById("carInfo");
-var formCreateCar = document.forms[Forms.form_create_car];
-var formAddWheels = document.forms[Forms.form_add_wheels];
-var inputPlate = formCreateCar.elements[Elements.input_plate];
-var inputBrand = formCreateCar.elements[Elements.input_brand];
-var inputColor = formCreateCar.elements[Elements.input_color];
-// EVENTS
-formCreateCar.addEventListener("submit", function (e) {
-    createCar(inputPlate.value, inputBrand.value, inputColor.value);
-    formPreventAndReset(e, this);
-});
-formAddWheels.addEventListener("submit", function (e) {
-    formCreateCar.classList.remove("is-none"); // CSS
-    formAddWheels.classList.add("is-none"); // CSS
-    formPreventAndReset(e, this);
-});
-// AUX
-function createCar(plate, brand, color) {
+var carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span");
+/* EVENTS */
+formCreateCar.addEventListener("submit", createCar);
+formAddWheels.addEventListener("submit", addWheelsToCurrentCar);
+/* LIB */
+function createCar(e) {
+    // outlet
     var carInfoSpans = document.querySelectorAll("#carInfo p span");
+    // inputs
+    var inputPlate = formCreateCar.elements[inputCar.input_plate];
+    var inputBrand = formCreateCar.elements[inputCar.input_brand];
+    var inputColor = formCreateCar.elements[inputCar.input_color];
+    // (pre) "Brand" style -> Case
+    var plate = inputPlate.value.toUpperCase();
+    var brand = FirstUpperCase(inputBrand.value);
+    var color = FirstUpperCase(inputColor.value);
+    // new vehicle
     var car = new Car(plate, color, brand);
-    car.addWheel(new Wheel(16, "Firestone"));
-    cars.push(car); // car of cars
+    // car of cars
+    cars.push(car);
     // toString -> <span>
     carInfoSpans[0].textContent = "" + (cars.indexOf(car) + 1);
     carInfoSpans[1].textContent = car.plate;
     carInfoSpans[2].textContent = car.brand;
     carInfoSpans[3].textContent = car.color;
-    carInfoSpans[4].textContent = "\n\t\t" + +car.wheels[car.wheels.length - 1].diameter + " inches.\n\t\t" + car.wheels[car.wheels.length - 1].brand;
+    // toString -> <ul><li> -> clear previous wheels
+    for (var i = 0; i < carInfoUlLiSpans.length; i++) {
+        carInfoUlLiSpans[i].textContent = "";
+    }
     // CSS
     carInfo.classList.remove("is-none");
     formCreateCar.classList.add("is-none");
     formAddWheels.classList.remove("is-none");
+    // prevent submit + clear input
+    formPreventAndReset(e, formCreateCar);
+}
+function addWheelsToCurrentCar(e) {
+    // wheel 1
+    var inputWheelBrandFL = formAddWheels.elements[inputWheels.wheel_FL_brand];
+    var inputWheelDiameterFL = formAddWheels.elements[inputWheels.wheel_FL_diameter];
+    // wheel 2
+    var inputWheelDiameterFR = formAddWheels.elements[inputWheels.wheel_FR_diameter];
+    var inputWheelBrandFR = formAddWheels.elements[inputWheels.wheel_FR_brand];
+    // wheel 3
+    var inputWheelDiameterRL = formAddWheels.elements[inputWheels.wheel_RL_diameter];
+    var inputWheelBrandRL = formAddWheels.elements[inputWheels.wheel_RL_brand];
+    // wheel 4
+    var inputWheelDiameterRR = formAddWheels.elements[inputWheels.wheel_RR_diameter];
+    var inputWheelBrandRR = formAddWheels.elements[inputWheels.wheel_RR_brand];
+    // (pre) "Brand" style -> Case
+    var brandFL = FirstUpperCase(inputWheelBrandFL.value);
+    var brandFR = FirstUpperCase(inputWheelBrandFR.value);
+    var brandRL = FirstUpperCase(inputWheelBrandRL.value);
+    var brandRR = FirstUpperCase(inputWheelBrandRR.value);
+    // .addWheel() <- (pre) +"Diameter" is int
+    cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterFL.value, brandFL));
+    cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterFR.value, brandFR));
+    cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterRL.value, brandRL));
+    cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterRR.value, brandRR));
+    // toString -> <ul><li>
+    for (var i = 0; i < carInfoUlLiSpans.length; i++) {
+        carInfoUlLiSpans[i].textContent = "\n\t\t\t" + cars[cars.length - 1].wheels[i].brand + "\n\t\t\t" + cars[cars.length - 1].wheels[i].diameter + "\"";
+    }
+    // CSS
+    formCreateCar.classList.toggle("is-none");
+    formAddWheels.classList.toggle("is-none");
+    // prevent submit + clear input
+    formPreventAndReset(e, formAddWheels);
+}
+function showListOfVehicles() {
+    // ON
+    // OFF
+}
+// AUX
+function FirstUpperCase(value) {
+    return value.substr(0, 1).toUpperCase() + value.substr(1, value.length - 1).toLowerCase();
 }
 function formPreventAndReset(e, ref) {
-    // prevent submit
     e.preventDefault();
     e.stopPropagation();
-    // clear input
-    ref.reset();
+    ref.reset(); // clear input
 }
