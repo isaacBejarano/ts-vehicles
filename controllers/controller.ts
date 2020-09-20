@@ -1,5 +1,4 @@
-/* GLOBAL */
-
+/* GLOBALS */
 let cars: Car[] = []; // collection of Car
 
 enum Forms {
@@ -24,33 +23,69 @@ enum inputWheels {
 	"wheel_RR_brand" = 7,
 }
 
-const formCreateCar = document.forms[Forms.form_create_car]; // REF <form> Cars
-const formAddWheels = document.forms[Forms.form_add_wheels];// REF <form> Wheels
+// Refs -> Forms
+const formCreateCar = document.forms[Forms.form_create_car];
+const formAddWheels = document.forms[Forms.form_add_wheels];
+// NOTE: Dynamic <form> acces via 'string' is not normative -> use 'number' index instead
 
-/* OUTLET */
+// Refs -> inputs
+const inputPlate = formCreateCar.elements[inputCar.input_plate] as HTMLInputElement;
+const inputBrand = formCreateCar.elements[inputCar.input_brand] as HTMLInputElement;
+const inputColor = formCreateCar.elements[inputCar.input_color] as HTMLInputElement;
 
-const carInfo = document.getElementById("carInfo") as HTMLElement;
-const carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span") as NodeListOf<HTMLSpanElement>;
+// Outlet
+const carInfo = document.getElementById("carInfo")!; // ! => object not null
+const carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span");
+
+// Regexp
+const regexPlate = new RegExp(/^[0-9]{4,4}[a-zA-Z]{3,3}$/); // (pre) "Plate" must have 4 digits followed by 3 letters
+let feedbackPlate = document.querySelector(`[name = ${inputPlate.name}] ~ div.invalid-feedback`)!; // ! => object not null
 
 /* EVENTS */
+formCreateCar.addEventListener("submit", function (e) {
+	validateBeforeCreateCar(e); // values
+});
 
-formCreateCar.addEventListener("submit", createCar);
+inputPlate.addEventListener("blur", function () {
+	validateInputPlate(this); // CSS
+});
+
 formAddWheels.addEventListener("submit", addWheelsToCurrentCar);
 
-/* LIB */
-
-function createCar(e: Event): void {
-	// outlet
-	const carInfoSpans = document.querySelectorAll("#carInfo p span") as NodeListOf<HTMLSpanElement>;
-	// inputs
-	const inputPlate = formCreateCar.elements[inputCar.input_plate] as HTMLInputElement;
-	const inputBrand = formCreateCar.elements[inputCar.input_brand] as HTMLInputElement;
-	const inputColor = formCreateCar.elements[inputCar.input_color] as HTMLInputElement;
-
+/* VALIDATION */
+function validateBeforeCreateCar(e: Event) {
 	// (pre) "Brand" style -> Case
 	const plate: string = inputPlate.value.toUpperCase();
 	const brand: string = FirstUpperCase(inputBrand.value);
 	const color: string = FirstUpperCase(inputColor.value);
+
+	// 1. PLATE
+	if (regexPlate.test(plate)) {
+		inputPlate.classList.remove("is-valid"); // clear CSS for next input Car
+		createCar(e, plate, color, brand);
+	} else {
+		inputPlate.classList.add("is-invalid");
+		feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	// 2. WHEELS
+}
+
+function validateInputPlate(ref: HTMLInputElement) {
+	if (regexPlate.test(ref.value)) {
+		ref.classList.remove("is-invalid");
+		ref.classList.add("is-valid");
+	} else {
+		ref.classList.add("is-invalid");
+		feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
+	}
+}
+/* LIB */
+function createCar(e: Event, plate: string, color: string, brand: string): void {
+	// outlet
+	const carInfoSpans = document.querySelectorAll("#carInfo p span");
 
 	// new vehicle
 	const car = new Car(plate, color, brand);
@@ -125,7 +160,6 @@ function showListOfVehicles(): void {
 }
 
 // AUX
-
 function FirstUpperCase(value: string): string {
 	return value.substr(0, 1).toUpperCase() + value.substr(1, value.length - 1).toLowerCase();
 }

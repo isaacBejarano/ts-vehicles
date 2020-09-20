@@ -1,5 +1,5 @@
 "use strict";
-/* GLOBAL */
+/* GLOBALS */
 var cars = []; // collection of Car
 var Forms;
 (function (Forms) {
@@ -23,26 +23,61 @@ var inputWheels;
     inputWheels[inputWheels["wheel_RR_diameter"] = 6] = "wheel_RR_diameter";
     inputWheels[inputWheels["wheel_RR_brand"] = 7] = "wheel_RR_brand";
 })(inputWheels || (inputWheels = {}));
-var formCreateCar = document.forms[Forms.form_create_car]; // REF <form> Cars
-var formAddWheels = document.forms[Forms.form_add_wheels]; // REF <form> Wheels
-/* OUTLET */
-var carInfo = document.getElementById("carInfo");
+// Refs -> Forms
+var formCreateCar = document.forms[Forms.form_create_car];
+var formAddWheels = document.forms[Forms.form_add_wheels];
+// NOTE: Dynamic <form> acces via 'string' is not normative -> use 'number' index instead
+// Refs -> inputs
+var inputPlate = formCreateCar.elements[inputCar.input_plate];
+var inputBrand = formCreateCar.elements[inputCar.input_brand];
+var inputColor = formCreateCar.elements[inputCar.input_color];
+// Outlet
+var carInfo = document.getElementById("carInfo"); // ! => object not null
 var carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span");
+// Regexp
+var regexPlate = new RegExp(/^[0-9]{4,4}[a-zA-Z]{3,3}$/); // (pre) "Plate" must have 4 digits followed by 3 letters
+var feedbackPlate = document.querySelector("[name = " + inputPlate.name + "] ~ div.invalid-feedback"); // ! => object not null
 /* EVENTS */
-formCreateCar.addEventListener("submit", createCar);
+formCreateCar.addEventListener("submit", function (e) {
+    validateBeforeCreateCar(e); // values
+});
+inputPlate.addEventListener("blur", function () {
+    validateInputPlate(this); // CSS
+});
 formAddWheels.addEventListener("submit", addWheelsToCurrentCar);
-/* LIB */
-function createCar(e) {
-    // outlet
-    var carInfoSpans = document.querySelectorAll("#carInfo p span");
-    // inputs
-    var inputPlate = formCreateCar.elements[inputCar.input_plate];
-    var inputBrand = formCreateCar.elements[inputCar.input_brand];
-    var inputColor = formCreateCar.elements[inputCar.input_color];
+/* VALIDATION */
+function validateBeforeCreateCar(e) {
     // (pre) "Brand" style -> Case
     var plate = inputPlate.value.toUpperCase();
     var brand = FirstUpperCase(inputBrand.value);
     var color = FirstUpperCase(inputColor.value);
+    // 1. PLATE
+    if (regexPlate.test(plate)) {
+        inputPlate.classList.remove("is-valid"); // clear CSS for next input Car
+        createCar(e, plate, color, brand);
+    }
+    else {
+        inputPlate.classList.add("is-invalid");
+        feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    // 2. WHEELS
+}
+function validateInputPlate(ref) {
+    if (regexPlate.test(ref.value)) {
+        ref.classList.remove("is-invalid");
+        ref.classList.add("is-valid");
+    }
+    else {
+        ref.classList.add("is-invalid");
+        feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
+    }
+}
+/* LIB */
+function createCar(e, plate, color, brand) {
+    // outlet
+    var carInfoSpans = document.querySelectorAll("#carInfo p span");
     // new vehicle
     var car = new Car(plate, color, brand);
     // car of cars
