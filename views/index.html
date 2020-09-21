@@ -1,299 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<title>Vehicles</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!-- Bootstrap CSS. v.4.4^ <-> .container-{breakpoint}  -->
-		<link
-			rel="stylesheet"
-			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-			integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
-			crossorigin="anonymous"
-		/>
-		<!-- Font Awesome - icons -->
-		<link
-			rel="stylesheet"
-			href="https://use.fontawesome.com/releases/v5.1.1/css/all.css"
-			integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ"
-			crossorigin="anonymous"
-		/>
-		<style>
-			body {
-				background-image: url("../assets/bg.jpg");
-				background-blend-mode: multiply;
-				background-color: #405872;
-				background-size: cover;
-			}
-			hgroup,
-			main {
-				max-width: 768px;
-			}
-			h2 {
-				font-size: 1.5rem;
-			}
-			form {
-				background-color: aliceblue;
-			}
-			ul {
-				list-style: none;
-			}
-			.is-none {
-				display: none;
-			}
-		</style>
-	</head>
 
-	<body>
-		<header>
-			<hgroup class="row mx-auto bg-primary text-light mt-lg-5">
-				<h1 class="col-9 display-4 pt-4 pl-4">Vehicles</h1>
-				<div class="col-3 d-flex justify-content-end p-0">
-					<button
-						name="btn_show_all"
-						class="align-self-start btn btn-sm btn-outline-light mt-2 mr-2 mt-sm-4 mr-sm-4"
-						type="button"
-						onclick="console.log(cars)"
-					>
-						<i class="fas fa-list-ul mr-1"></i>
-						List
-					</button>
-				</div>
-				<h2 class="col-12 pb-4 pl-4 font-weight-lighter">OOP - Typescript</h2>
-			</hgroup>
-		</header>
+<head>
+  <meta charset="UTF-8" />
+  <title>Vehicles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Bootstrap CSS. v.4.4^ <-> .container-{breakpoint}  -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+  <!-- Font Awesome - icons -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css"
+    integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous" />
+  <style>
+    body {
+      background-image: url("../assets/bg.jpg");
+      background-blend-mode: multiply;
+      background-color: #405872;
+      background-size: cover;
+    }
 
-		<main class="mx-auto">
-			<!-- OUTLET -->
-			<section id="carInfo" class="is-none my-0 p-4 mx-auto bg-light border border-top-0 border-primary text-primary">
-				<!-- Car # -->
-				<p class="my-1">
-					<i class="fas fa-car"></i>
-					CAR #
-					<span class="text-dark"></span>
-				</p>
-				<div class="border border-bottom my-2"></div>
+    hgroup,
+    main {
+      max-width: 768px;
+    }
 
-				<!-- Car main -->
-				<p class="my-1">
-					<i class="far fa-address-card"></i>
-					PLATE:
-					<span class="text-dark"></span>
-				</p>
-				<p class="my-1">
-					<i class="fas fa-signature"></i>
-					BRAND:
-					<span class="text-dark"></span>
-				</p>
-				<p class="my-1">
-					<i class="fas fa-palette"></i>
-					COLOR:
-					<span class="text-dark"></span>
-				</p>
-				<div class="border border-bottom my-2"></div>
+    h2 {
+      font-size: 1.5rem;
+    }
 
-				<!-- Car Wheels -->
-				<p class="my-1">
-					<i class="fas fa-dot-circle"></i>
-					WHEELS
-					<span class="text-dark"></span>
-				</p>
+    form {
+      background-color: aliceblue;
+    }
 
-				<ul class="my-1">
-					<li>
-						<i class="fas fa-caret-up text-info"></i>
-						<i class="fas fa-angle-left text-info"></i>
-						FL:
-						<span class="text-dark"></span>
-					</li>
-					<li>
-						<i class="fas fa-caret-up text-info"></i>
-						<i class="fas fa-angle-right text-info"></i>
-						FR:
-						<span class="text-dark"></span>
-					</li>
-					<li>
-						<i class="fas fa-caret-down text-info"></i>
-						<i class="fas fa-angle-left text-info"></i>
-						RL:
-						<span class="text-dark"></span>
-					</li>
-					<li>
-						<i class="fas fa-caret-down text-info"></i>
-						<i class="fas fa-angle-right text-info"></i>
-						RR:
-						<span class="text-dark"></span>
-					</li>
-				</ul>
-			</section>
+    ul {
+      list-style: none;
+    }
 
-			<!-- LIST: ON  -> inject [0] + append DOM after + inject [...n] -->
-			<!-- LIST: OFF -> clear all appended DOM - fisrt + .is-none -->
+    .is-none {
+      display: none;
+    }
+  </style>
+</head>
 
-			<!-- FORM 1 / Plate / Brand / Color -->
-			<form name="form_create_car" action="#" class="border border-primary border-top-0 rounded-bottom p-4 m-0">
-				<section class="row">
-					<!-- Plate -->
-					<div class="form-group col-6 col-sm-3">
-						<i class="far fa-address-card"></i>
-						<!-- accessibility - label: screen readers -->
-						<label for="input_plate" class="sr-only">Plate</label>
-						<input name="input_plate" id="input_plate" class="form-control" type="text" placeholder="e.g. 1234abc" />
-						<!-- tooltips -->
-						<div class="invalid-feedback border border-danger rounded-lg bg-papiro1 p-2"></div>
-					</div>
+<body>
+  <header>
+    <hgroup class="row mx-auto bg-primary text-light mt-lg-5">
+      <h1 class="col-9 display-4 pt-4 pl-4">Vehicles</h1>
+      <div class="col-3 d-flex justify-content-end p-0">
+        <button name="btn_show_all" class="align-self-start btn btn-sm btn-outline-light mt-2 mr-2 mt-sm-4 mr-sm-4"
+          type="button" onclick="console.log(cars)">
+          <i class="fas fa-list-ul mr-1"></i>
+          List
+        </button>
+      </div>
+      <h2 class="col-12 pb-4 pl-4 font-weight-lighter">OOP - Typescript</h2>
+    </hgroup>
+  </header>
 
-					<!-- Brand -->
-					<div class="form-group col-6 col-sm-3">
-						<i class="fas fa-signature"></i>
-						<!-- accessibility - label: screen readers -->
-						<label for="input_brand" class="sr-only">Brand</label>
-						<input name="input_brand" id="input_brand" class="form-control" type="text" />
-					</div>
+  <main class="mx-auto">
+    <!-- OUTLET -->
+    <section id="carInfo" class="is-none my-0 p-4 mx-auto bg-light border border-top-0 border-primary text-primary">
+      <!-- Car # -->
+      <p class="my-1">
+        <i class="fas fa-car"></i>
+        CAR #
+        <span class="text-dark"></span>
+      </p>
+      <div class="border border-bottom my-2"></div>
 
-					<!-- Color -->
-					<div class="form-group col-6 col-sm-3">
-						<i class="fas fa-palette"></i>
-						<!-- accessibility - label: screen readers -->
-						<label for="input_color" class="sr-only">Color</label>
-						<input name="input_color" id="input_color" class="form-control" type="text" />
-					</div>
+      <!-- Car main -->
+      <p class="my-1">
+        <i class="far fa-address-card"></i>
+        PLATE:
+        <span class="text-dark"></span>
+      </p>
+      <p class="my-1">
+        <i class="fas fa-signature"></i>
+        BRAND:
+        <span class="text-dark"></span>
+      </p>
+      <p class="my-1">
+        <i class="fas fa-palette"></i>
+        COLOR:
+        <span class="text-dark"></span>
+      </p>
+      <div class="border border-bottom my-2"></div>
 
-					<!-- submit -->
-					<div class="form-group col-6 col-sm-3 d-flex align-items-start justify-content-center mt-4">
-						<button name="btn_create_car" class="btn btn-outline-primary my-0" type="submit">Create Car</button>
-					</div>
-				</section>
-			</form>
+      <!-- Car Wheels -->
+      <p class="my-1">
+        <i class="fas fa-dot-circle"></i>
+        WHEELS
+        <span class="text-dark"></span>
+      </p>
 
-			<!-- FORM 2 / Wheels -->
-			<form name="form_add_wheels" action="#" class="is-none border border-primary border-top-0 rounded-bottom p-4 m-0">
-				<legend class="mb-4">
-					<i class="fas fa-dot-circle"></i>
-					Wheels
-				</legend>
+      <ul class="my-1">
+        <li>
+          <i class="fas fa-caret-up text-info"></i>
+          <i class="fas fa-angle-left text-info"></i>
+          FL:
+          <span class="text-dark"></span>
+        </li>
+        <li>
+          <i class="fas fa-caret-up text-info"></i>
+          <i class="fas fa-angle-right text-info"></i>
+          FR:
+          <span class="text-dark"></span>
+        </li>
+        <li>
+          <i class="fas fa-caret-down text-info"></i>
+          <i class="fas fa-angle-left text-info"></i>
+          RL:
+          <span class="text-dark"></span>
+        </li>
+        <li>
+          <i class="fas fa-caret-down text-info"></i>
+          <i class="fas fa-angle-right text-info"></i>
+          RR:
+          <span class="text-dark"></span>
+        </li>
+      </ul>
+    </section>
 
-				<!-- Front -->
-				<section class="row p-2 my-4 my-sm-3 mx-sm-0 border border-primary rounded-lg">
-					<!-- Wheel FL -->
-					<div class="col-12 col-sm-6 p-3 p-sm-4">
-						<legend>
-							<span class="text-primary">Front Left</span>
-							<i class="fas fa-caret-up text-info"></i>
-							<i class="fas fa-angle-left text-info"></i>
-						</legend>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_FL_diameter" class="sr-only">Diameter (inches)</label>
-							<input
-								name="wheel_FL_diameter"
-								id="wheel_FL_diameter"
-								class="form-control"
-								type="number"
-								min="0"
-								step="0.1"
-								inputmode="decimal"
-							/>
-						</div>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_FL_brand" class="sr-only">Brand</label>
-							<input name="wheel_FL_brand" id="wheel_FL_brand" class="form-control" type="text" />
-						</div>
-					</div>
-					<!-- Wheel FR -->
-					<div class="col-12 col-sm-6 p-3 p-sm-4">
-						<legend>
-							<span class="text-primary">Front Right</span>
-							<i class="fas fa-caret-up text-info"></i>
-							<i class="fas fa-angle-right text-info"></i>
-						</legend>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_FR_diameter" class="sr-only">Diameter (inches)</label>
-							<input
-								name="wheel_FR_diameter"
-								id="wheel_FR_diameter"
-								class="form-control"
-								type="number"
-								min="0"
-								step="0.1"
-								inputmode="decimal"
-							/>
-						</div>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_FR_brand" class="sr-only">Brand</label>
-							<input name="wheel_FR_brand" id="wheel_FR_brand" class="form-control" type="text" />
-						</div>
-					</div>
-				</section>
+    <!-- LIST: ON  -> inject [0] + append DOM after + inject [...n] -->
+    <!-- LIST: OFF -> clear all appended DOM - fisrt + .is-none -->
 
-				<!-- Rear -->
-				<section class="row px-1 my-4 my-sm-3 mx-sm-0 border border-primary rounded-lg">
-					<!-- Wheel RL -->
-					<div class="col-12 col-sm-6 p-3 p-sm-4">
-						<legend>
-							<span class="text-primary">Rear Left</span>
-							<i class="fas fa-caret-down text-info"></i>
-							<i class="fas fa-angle-left text-info"></i>
-						</legend>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_RL_diameter" class="sr-only">Diameter (inches)</label>
-							<input
-								name="wheel_RL_diameter"
-								id="wheel_RL_diameter"
-								class="form-control"
-								type="number"
-								min="0"
-								step="0.1"
-								inputmode="decimal"
-							/>
-						</div>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_RL_brand" class="sr-only">Brand</label>
-							<input name="wheel_RL_brand" id="wheel_RL_brand" class="form-control" type="text" />
-						</div>
-					</div>
-					<!-- Wheel RR -->
-					<div class="col-12 col-sm-6 p-3 p-sm-4">
-						<legend>
-							<span class="text-primary">Rear Right</span>
-							<i class="fas fa-caret-down text-info"></i>
-							<i class="fas fa-angle-right text-info"></i>
-						</legend>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_RR_diameter" class="sr-only">Diameter (inches)</label>
-							<input
-								name="wheel_RR_diameter"
-								id="wheel_RR_diameter"
-								class="form-control"
-								type="number"
-								min="0"
-								step="0.1"
-								inputmode="decimal"
-							/>
-						</div>
-						<div class="form-group">
-							<!-- accessibility - label: screen readers -->
-							<label for="wheel_RR_brand" class="sr-only">Brand</label>
-							<input name="wheel_RR_brand" id="wheel_RR_brand" class="form-control" type="text" />
-						</div>
-					</div>
-				</section>
+    <!-- FORM 1 / Plate / Brand / Color -->
+    <form name="form_create_car" action="#" class="border border-primary border-top-0 rounded-bottom p-4 m-0">
+      <section class="row">
+        <!-- Plate -->
+        <div class="form-group col-6 col-sm-3">
+          <i class="far fa-address-card"></i>
+          <!-- accessibility - label: screen readers -->
+          <label for="input_plate" class="sr-only">Plate</label>
+          <input name="input_plate" id="input_plate" class="form-control" type="text" placeholder="e.g. 1234abc" />
+          <!-- tooltips -->
+          <div class="invalid-feedback border border-danger rounded-lg bg-papiro1 p-2"></div>
+        </div>
 
-				<!-- Submit -->
-				<div class="row justify-content-center">
-					<button name="btn_add_wheels" class="btn btn-outline-primary mt-3" type="submit">Add Wheels</button>
-				</div>
-			</form>
-		</main>
+        <!-- Brand -->
+        <div class="form-group col-6 col-sm-3">
+          <i class="fas fa-signature"></i>
+          <!-- accessibility - label: screen readers -->
+          <label for="input_brand" class="sr-only">Brand</label>
+          <input name="input_brand" id="input_brand" class="form-control" type="text" />
+        </div>
 
-		<script src="../models/car.js"></script>
-		<script src="../models/wheel.js"></script>
-		<script src="../controllers/controller.js"></script>
-	</body>
+        <!-- Color -->
+        <div class="form-group col-6 col-sm-3">
+          <i class="fas fa-palette"></i>
+          <!-- accessibility - label: screen readers -->
+          <label for="input_color" class="sr-only">Color</label>
+          <input name="input_color" id="input_color" class="form-control" type="text" />
+        </div>
+
+        <!-- submit -->
+        <div class="form-group col-6 col-sm-3 d-flex align-items-start justify-content-center mt-4">
+          <button name="btn_create_car" class="btn btn-outline-primary my-0" type="submit">
+            Create Car
+          </button>
+        </div>
+      </section>
+    </form>
+
+    <!-- FORM 2 / Wheels -->
+    <form name="form_add_wheels" action="#" class="is-none border border-primary border-top-0 rounded-bottom p-4 m-0">
+      <legend class="mb-4">
+        <i class="fas fa-dot-circle"></i>
+        Wheels
+      </legend>
+
+      <!-- Front -->
+      <section class="row p-2 my-4 my-sm-3 mx-sm-0 border border-info rounded-lg">
+        <!-- Wheel FL -->
+        <div class="col-12 col-sm-6 p-3 p-sm-4">
+          <legend>
+            <span class="text-primary">Front Left</span>
+            <i class="fas fa-caret-up text-info"></i>
+            <i class="fas fa-angle-left text-info"></i>
+          </legend>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_FL_diameter" class="sr-only">Diameter (inches)</label>
+            <input name="wheel_FL_diameter" id="wheel_FL_diameter" class="form-control" type="number" min="0" step="0.1"
+              inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_FL_brand" class="sr-only">Brand</label>
+            <input name="wheel_FL_brand" id="wheel_FL_brand" class="form-control" type="text" />
+          </div>
+        </div>
+        <!-- Wheel FR -->
+        <div class="col-12 col-sm-6 p-3 p-sm-4">
+          <legend>
+            <span class="text-primary">Front Right</span>
+            <i class="fas fa-caret-up text-info"></i>
+            <i class="fas fa-angle-right text-info"></i>
+          </legend>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_FR_diameter" class="sr-only">Diameter (inches)</label>
+            <input name="wheel_FR_diameter" id="wheel_FR_diameter" class="form-control" type="number" min="0" step="0.1"
+              inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_FR_brand" class="sr-only">Brand</label>
+            <input name="wheel_FR_brand" id="wheel_FR_brand" class="form-control" type="text" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Rear -->
+      <section class="row px-1 my-4 my-sm-3 mx-sm-0 border border-info rounded-lg">
+        <!-- Wheel RL -->
+        <div class="col-12 col-sm-6 p-3 p-sm-4">
+          <legend>
+            <span class="text-primary">Rear Left</span>
+            <i class="fas fa-caret-down text-info"></i>
+            <i class="fas fa-angle-left text-info"></i>
+          </legend>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_RL_diameter" class="sr-only">Diameter (inches)</label>
+            <input name="wheel_RL_diameter" id="wheel_RL_diameter" class="form-control" type="number" min="0" step="0.1"
+              inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_RL_brand" class="sr-only">Brand</label>
+            <input name="wheel_RL_brand" id="wheel_RL_brand" class="form-control" type="text" />
+          </div>
+        </div>
+        <!-- Wheel RR -->
+        <div class="col-12 col-sm-6 p-3 p-sm-4">
+          <legend>
+            <span class="text-primary">Rear Right</span>
+            <i class="fas fa-caret-down text-info"></i>
+            <i class="fas fa-angle-right text-info"></i>
+          </legend>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_RR_diameter" class="sr-only">Diameter (inches)</label>
+            <input name="wheel_RR_diameter" id="wheel_RR_diameter" class="form-control" type="number" min="0" step="0.1"
+              inputmode="decimal" />
+          </div>
+          <div class="form-group">
+            <!-- accessibility - label: screen readers -->
+            <label for="wheel_RR_brand" class="sr-only">Brand</label>
+            <input name="wheel_RR_brand" id="wheel_RR_brand" class="form-control" type="text" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Submit -->
+      <div class="row justify-content-center">
+        <button name="btn_add_wheels" class="btn btn-outline-info mt-3" type="submit">
+          Add Wheels
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <script src="../models/car.js"></script>
+  <script src="../models/wheel.js"></script>
+  <script src="../controllers/controller.js"></script>
+</body>
+
 </html>

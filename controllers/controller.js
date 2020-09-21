@@ -35,7 +35,7 @@ var inputColor = formCreateCar.elements[inputCar.input_color];
 var carInfo = document.getElementById("carInfo"); // ! => object not null
 var carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span");
 // Regexp
-var regexPlate = new RegExp(/^[0-9]{4,4}[a-zA-Z]{3,3}$/); // (pre) "Plate" must have 4 digits followed by 3 letters
+var regexPlate = new RegExp(/^[0-9]{4}[a-zA-Z]{3}$/); // (pre) "Plate" must have 4 digits followed by 3 letters
 var feedbackPlate = document.querySelector("[name = " + inputPlate.name + "] ~ div.invalid-feedback"); // ! => object not null
 /* EVENTS */
 formCreateCar.addEventListener("submit", function (e) {
@@ -123,7 +123,13 @@ function addWheelsToCurrentCar(e) {
     cars[cars.length - 1].addWheel(new Wheel(+inputWheelDiameterRR.value, brandRR));
     // toString -> <ul><li>
     for (var i = 0; i < carInfoUlLiSpans.length; i++) {
-        carInfoUlLiSpans[i].textContent = "\n\t\t\t" + cars[cars.length - 1].wheels[i].brand + "\n\t\t\t" + cars[cars.length - 1].wheels[i].diameter + "\"";
+        var brandToString = cars[cars.length - 1].wheels[i].brand
+            ? cars[cars.length - 1].wheels[i].brand + " /"
+            : "No brand specified /";
+        var diameterToString = cars[cars.length - 1].wheels[i].diameter > 0
+            ? cars[cars.length - 1].wheels[i].diameter + '"'
+            : "No diameter specified";
+        carInfoUlLiSpans[i].textContent = brandToString + " " + diameterToString; // e.g. Firestone 15.5"
     }
     // CSS
     formCreateCar.classList.toggle("is-none");
