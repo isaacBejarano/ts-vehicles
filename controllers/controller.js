@@ -57,7 +57,6 @@ for (var i = 0; i < wheelsLength; i += 2) {
 // 1. validate "plate" value
 function validateBeforeCreateCar(e) {
     // (pre) style -> Case
-    console.log(inputPlate.value);
     var plate = inputPlate.value.toUpperCase();
     var brand = FirstUpperCase(inputBrand.value);
     var color = FirstUpperCase(inputColor.value);

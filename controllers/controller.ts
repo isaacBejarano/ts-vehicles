@@ -3,40 +3,40 @@ let cars: Car[] = []; // collection of Car
 
 /* REFS */
 // forms
-let formCreateCar = document.getElementById("form_create_car") as HTMLFormElement;
-let formAddWheels = document.getElementById("form_add_wheels") as HTMLFormElement;
+const formCreateCar = document.getElementById("form_create_car") as HTMLFormElement;
+const formAddWheels = document.getElementById("form_add_wheels") as HTMLFormElement;
 
 // 1.1 Car's inputs
-let inputPlate = document.getElementById("input_plate") as HTMLInputElement;
-let inputBrand = document.getElementById("input_brand") as HTMLInputElement;
-let inputColor = document.getElementById("input_color") as HTMLInputElement;
+const inputPlate = document.getElementById("input_plate") as HTMLInputElement;
+const inputBrand = document.getElementById("input_brand") as HTMLInputElement;
+const inputColor = document.getElementById("input_color") as HTMLInputElement;
 
 // 1.2 Plate's Regexp()
-let regexPlate = new RegExp(/^[0-9]{4}[a-zA-Z]{3}$/); // "Plate" has 4 digits followed by 3 letters
+const regexPlate = new RegExp(/^[0-9]{4}[a-zA-Z]{3}$/); // "Plate" has 4 digits followed by 3 letters
 
 // 1.3 feedbackPlate -> validatePlate + validateBeforeCreateCar
-let feedbackPlate = document.querySelector(`#${inputPlate.id} ~ div.invalid-feedback`)!; // ! => object not null
+const feedbackPlate = document.querySelector(`#${inputPlate.id} ~ div.invalid-feedback`)!; // ! => object not null
 
 // 2.1 Wheel's inputs
 // wheel FL
-let inputWheelBrandFL = document.getElementById("wheel_FL_brand") as HTMLInputElement;
-let inputWheelDiameterFL = document.getElementById("wheel_FL_diameter") as HTMLInputElement;
+const inputWheelBrandFL = document.getElementById("wheel_FL_brand") as HTMLInputElement;
+const inputWheelDiameterFL = document.getElementById("wheel_FL_diameter") as HTMLInputElement;
 // wheel FR
-let inputWheelDiameterFR = document.getElementById("wheel_FR_diameter") as HTMLInputElement;
-let inputWheelBrandFR = document.getElementById("wheel_FR_brand") as HTMLInputElement;
+const inputWheelDiameterFR = document.getElementById("wheel_FR_diameter") as HTMLInputElement;
+const inputWheelBrandFR = document.getElementById("wheel_FR_brand") as HTMLInputElement;
 // wheel RL
-let inputWheelDiameterRL = document.getElementById("wheel_RL_diameter") as HTMLInputElement;
-let inputWheelBrandRL = document.getElementById("wheel_RL_brand") as HTMLInputElement;
+const inputWheelDiameterRL = document.getElementById("wheel_RL_diameter") as HTMLInputElement;
+const inputWheelBrandRL = document.getElementById("wheel_RL_brand") as HTMLInputElement;
 // wheel RR
-let inputWheelDiameterRR = document.getElementById("wheel_RR_diameter") as HTMLInputElement;
-let inputWheelBrandRR = document.getElementById("wheel_RR_brand") as HTMLInputElement;
+const inputWheelDiameterRR = document.getElementById("wheel_RR_diameter") as HTMLInputElement;
+const inputWheelBrandRR = document.getElementById("wheel_RR_brand") as HTMLInputElement;
 
 // 2.2 wheelsLength -> validateDiameter + validateBeforeAddWheel
-let wheelsLength = formAddWheels.length - 1; // (4 brands + 4 diameters -1 button)
+const wheelsLength = formAddWheels.length - 1; // (4 brands + 4 diameters -1 button)
 
 // 3. Outlet
-let carInfo = document.getElementById("carInfo") as HTMLElement; // ! => object not null
-let carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span") as NodeListOf<HTMLSpanElement>;
+const carInfo = document.getElementById("carInfo") as HTMLElement; // ! => object not null
+const carInfoUlLiSpans = document.querySelectorAll("#carInfo ul li span") as NodeListOf<HTMLSpanElement>;
 
 /* EVENTS */
 // 1. validate "plate" + create Car
@@ -65,8 +65,6 @@ for (let i = 0; i < wheelsLength; i += 2) {
 // 1. validate "plate" value
 function validateBeforeCreateCar(e: Event): void {
   // (pre) style -> Case
-  console.log(inputPlate.value);
-
   const plate: string = inputPlate.value.toUpperCase();
   const brand: string = FirstUpperCase(inputBrand.value);
   const color: string = FirstUpperCase(inputColor.value);
