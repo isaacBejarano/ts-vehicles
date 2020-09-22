@@ -171,24 +171,30 @@ function validateDiameter(diameter) {
 }
 // 5. List of Cars
 function showListOfCars() {
-    var length = cars.length;
-    var nextCar = document.createElement("section");
+    var carsLength = cars.length;
     /* ON */
     // firstCar
     var firstCar = document.getElementById("list-car-1");
     var itemsCar = document.querySelectorAll("#" + firstCar.id + " p span"); // <- plate, brand, color
     var itemsWheel = document.querySelectorAll("#" + firstCar.id + " ul li span"); // <- diameter, brand
+    // once cloned, change id
+    // firstCar.id = "nextstep";
     firstCar.classList.toggle("is-none"); // ON / OFF
-    // rest
-    for (var i = 1; i < length; i++) {
-        nextCar.setAttribute("id", "list-car-" + (i + 1)); // clona firstCar
-        firstCar.after(nextCar);
-    }
+    var nextCar = firstCar.cloneNode(true);
+    nextCar.id = "list-car-2";
+    nextCar.classList.add("is-none"); // ON / OFF
+    if (firstCar.nextElementSibling)
+        firstCar.nextElementSibling.classList.toggle("is-none"); // ON / OFF
+    console.log(nextCar);
+    firstCar.after(nextCar);
+    nextCar.classList.toggle("is-none"); // ON / OFF
     /* OFF */
-    if (firstCar.classList.contains("is-none")) {
-        console.log("deleting...");
-        // for (let i = 0; i < length; i++) {
-        // 	firstCar.after();			
-        // }
-    }
+    // if (firstCar.classList.contains("is-none")) {
+    // 	console.log("deleting...");
+    // for (let i = 0; i < length; i++) {
+    // 	firstCar.after();
+    // }
+    // }
 }
+// TEST
+cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2"), new Car("car3", "3", "3")];

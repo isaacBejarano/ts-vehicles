@@ -210,28 +210,38 @@ function validateDiameter(diameter: HTMLInputElement): void {
 
 // 5. List of Cars
 function showListOfCars(): void {
-	const length = cars.length;
-	let nextCar = document.createElement("section");
+	const carsLength = cars.length;
 
 	/* ON */
 	// firstCar
 	const firstCar = document.getElementById("list-car-1") as HTMLElement;
 	const itemsCar = document.querySelectorAll(`#${firstCar.id} p span`) as NodeListOf<HTMLElement>; // <- plate, brand, color
 	const itemsWheel = document.querySelectorAll(`#${firstCar.id} ul li span`) as NodeListOf<HTMLSpanElement>; // <- diameter, brand
+
+	// once cloned, change id
+	// firstCar.id = "nextstep";
 	firstCar.classList.toggle("is-none"); // ON / OFF
 
-	// rest
-	for (let i = 1; i < length; i++) {
-		nextCar.setAttribute("id", `list-car-${i + 1}`); // clona firstCar
-		firstCar.after(nextCar);
-	}
+	let nextCar = firstCar.cloneNode(true) as HTMLElement;
+	nextCar.id = `list-car-2`;
+	nextCar.classList.add("is-none"); // ON / OFF
+	if (firstCar.nextElementSibling) firstCar.nextElementSibling.classList.toggle("is-none"); // ON / OFF
+
+	console.log(nextCar);
+
+	firstCar.after(nextCar);
+
+	nextCar.classList.toggle("is-none"); // ON / OFF
 
 	/* OFF */
-	if (firstCar.classList.contains("is-none")) {
-		console.log("deleting...");
+	// if (firstCar.classList.contains("is-none")) {
+	// 	console.log("deleting...");
 
-		// for (let i = 0; i < length; i++) {
-		// 	firstCar.after();			
-		// }
-	}
+	// for (let i = 0; i < length; i++) {
+	// 	firstCar.after();
+	// }
+	// }
 }
+
+// TEST
+cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2"), new Car("car3", "3", "3")];
