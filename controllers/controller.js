@@ -196,9 +196,25 @@ function showListOfCars() {
             outletCloned.children[7].children[j].children[2].classList.replace("text-dark", "text-light");
         }
         // 5.1 toString - Car
-        console.log(outletLength);
+        outletCloned.children[0].children[1].textContent = "" + (i + 1);
+        outletCloned.children[2].children[1].textContent = cars[i].plate;
+        outletCloned.children[3].children[1].textContent = cars[i].brand;
+        outletCloned.children[4].children[1].textContent = cars[i].color;
         // 5.2 toString - Wheel
+        for (var j = 0; j < outletWheelsLength; j++) {
+            outletCloned.children[7].children[j].children[2].textContent = "WHEELS HERE " + cars[i].wheels[j].diameter + " / " + cars[i].wheels[j].brand;
+            console.log(outletCloned.children[7].children[j].children[2]);
+        }
+        //
     }
 }
 // TEST
-cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2"), new Car("car3", "3", "3"), new Car("car4", "4", "4")];
+cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2")];
+cars[0].wheels[0] = new Wheel(1.5, "Firestone");
+cars[0].wheels[1] = new Wheel(1.5, "Firestone");
+cars[0].wheels[2] = new Wheel(1.5, "Firestone");
+cars[0].wheels[3] = new Wheel(1.5, "Firestone");
+cars[1].wheels[0] = new Wheel(1.3, "Dunlop");
+cars[1].wheels[1] = new Wheel(1.3, "Dunlop");
+cars[1].wheels[2] = new Wheel(1.3, "Dunlop");
+cars[1].wheels[3] = new Wheel(1.3, "Dunlop");
