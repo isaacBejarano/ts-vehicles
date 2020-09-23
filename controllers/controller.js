@@ -59,13 +59,13 @@ btnShowAllCars.addEventListener("click", showListOfCars);
 /* VALIDATION */
 // 1. validate "plate" value
 function validateBeforeCreateCar(e) {
-    // (pre) style -> Case
+    // (pre) props -> Case
     var plate = inputPlate.value.toUpperCase();
     var brand = FirstUpperCase(inputBrand.value);
     var color = FirstUpperCase(inputColor.value);
     if (regexPlate.test(plate)) {
         inputPlate.classList.remove("is-valid"); // clear CSS for next Car's Plate
-        createCar(e, plate, color, brand);
+        createCar(e, plate, brand, color);
     }
     else {
         inputPlate.classList.add("is-invalid");
@@ -85,7 +85,7 @@ function validateBeforeAddWheel(e) {
         var feedbackDiameter = document.querySelector("[name = " + diameter.name + "] ~ div.invalid-feedback");
         diameters.push(diameter);
         brands.push(brand);
-        // validate +Diameter (parsed int) CSS
+        // (pre) prop diameter -> parse int
         if (+diameter.value <= 0.4 || +diameter.value >= 2) {
             formAddWheels.elements[i].classList.add("is-invalid");
             feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
@@ -96,29 +96,28 @@ function validateBeforeAddWheel(e) {
     errorCount === 0 ? addWheelsToCurrentCar(e, diameters, brands) : (e.preventDefault(), e.stopPropagation());
 }
 /* LIB */
-function createCar(e, plate, color, brand) {
-    // new Car
+function createCar(e, plate, brand, color) {
+    // new Car + outlet for Car
     var car = new Car(plate, color, brand);
-    // outlet
     var outletCar = document.querySelectorAll("#carInfo p span"); // <- plate, brand, color
     // 1. car of cars
     cars.push(car);
     // 2. toString -> #carInfo p <span>
     outletCar[0].textContent = "" + (cars.indexOf(car) + 1);
-    outletCar[1].textContent = car.plate;
-    outletCar[2].textContent = car.brand;
-    outletCar[3].textContent = car.color;
+    outletCar[1].textContent = car.plate ? car.plate : "not specified";
+    outletCar[2].textContent = car.brand ? car.brand : "not specified";
+    outletCar[3].textContent = car.color ? car.color : "not specified";
     // 3. form's CSS
-    carInfo.classList.remove("is-none"); // diabled for the rest of life cycle
+    carInfo.classList.remove("is-none"); // disabled for the rest of life cycle
     formCreateCar.classList.add("is-none");
     formAddWheels.classList.remove("is-none");
     // 4. prevent submit + reset form for next Car's inputs
     formPreventAndReset(e, formCreateCar);
 }
 function addWheelsToCurrentCar(e, diameters, brands) {
-    var length = diameters.length; // === brands.length
+    var diametersLength = diameters.length; // === brands.length
     var outletWheel = document.querySelectorAll("#carInfo ul li span"); // <- diameter / brand
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < diametersLength; i++) {
         var parsedDiameter = +diameters[i].value;
         var capitalCasedBrand = FirstUpperCase(brands[i].value);
         var wheel = new Wheel(parsedDiameter, capitalCasedBrand);
@@ -175,46 +174,64 @@ function validateDiameter(diameter) {
 function showListOfCars() {
     var outletLength = cars.length;
     var outletList = document.getElementById("list-all-cars");
-    for (var i = 0; i < outletLength; i++) {
-        // 1. clone
-        var outletCloned = carInfo.cloneNode(true);
-        var outletWheelsLength = outletCloned.children[7].children.length;
-        // 2. id + class
-        outletCloned.id = "carinfo-" + (i + 1);
-        outletCloned.classList.replace("bg-light", "bg-dark");
-        outletCloned.classList.replace("text-primary", "text-light");
-        // 3. append cloned + toggle display
-        outletList.append(outletCloned);
-        outletCloned.classList.toggle("is-none");
-        // 4.1 CSS - Car <span>
-        outletCloned.children[0].children[1].classList.replace("text-dark", "text-light");
-        outletCloned.children[2].children[1].classList.replace("text-dark", "text-light");
-        outletCloned.children[3].children[1].classList.replace("text-dark", "text-light");
-        outletCloned.children[4].children[1].classList.replace("text-dark", "text-light");
-        // 4.2 CSS - Wheels <span>
-        for (var j = 0; j < outletWheelsLength; j++) {
-            outletCloned.children[7].children[j].children[2].classList.replace("text-dark", "text-light");
+    // ON -> create List + show
+    if (outletList.children.length === 0) {
+        for (var i = 0; i < outletLength; i++) {
+            // 1. clone
+            var outletCloned = carInfo.cloneNode(true);
+            var outletWheelsLength = outletCloned.children[7].children.length;
+            // 2. id + class
+            outletCloned.id = "carinfo-" + (i + 1);
+            outletCloned.classList.replace("bg-light", "bg-dark");
+            outletCloned.classList.replace("text-primary", "text-info");
+            // 3. append cloned + show List
+            outletList.append(outletCloned);
+            outletCloned.classList.remove("is-none");
+            // 4.1 CSS - Car <span>
+            outletCloned.children[0].children[1].classList.replace("text-dark", "text-light");
+            outletCloned.children[2].children[1].classList.replace("text-dark", "text-light");
+            outletCloned.children[3].children[1].classList.replace("text-dark", "text-light");
+            outletCloned.children[4].children[1].classList.replace("text-dark", "text-light");
+            // 4.2 CSS - Wheels <span>
+            for (var j = 0; j < outletWheelsLength; j++) {
+                outletCloned.children[7].children[j].children[2].classList.replace("text-dark", "text-light");
+            }
+            // 5.1 toString - existing Car props
+            outletCloned.children[0].children[1].textContent = "" + (i + 1);
+            outletCloned.children[2].children[1].textContent = cars[i].plate ? cars[i].plate : "not specified";
+            outletCloned.children[3].children[1].textContent = cars[i].brand ? cars[i].brand : "not specified";
+            outletCloned.children[4].children[1].textContent = cars[i].color ? cars[i].color : "not specified";
+            // 5.2 toString - existing Wheel props
+            for (var j = 0; j < outletWheelsLength; j++) {
+                // default values
+                var brandToString = "not specified";
+                var diameterToString = "not specified";
+                // <form> Wheel submited?
+                if (cars[i].wheels.length) {
+                    if (cars[i].wheels[j].brand !== "")
+                        brandToString = cars[i].wheels[j].brand;
+                    if (cars[i].wheels[j].diameter > 0)
+                        diameterToString = "" + cars[i].wheels[j].diameter; // stringified
+                }
+                // prettier-ignore
+                outletCloned
+                    .children[7]
+                    .children[j]
+                    .children[2]
+                    .textContent = "Brand: " + brandToString + " / Diameter: " + diameterToString + "\""; // e.g. Firestone / 1.5"
+            }
         }
-        // 5.1 toString - Car
-        outletCloned.children[0].children[1].textContent = "" + (i + 1);
-        outletCloned.children[2].children[1].textContent = cars[i].plate;
-        outletCloned.children[3].children[1].textContent = cars[i].brand;
-        outletCloned.children[4].children[1].textContent = cars[i].color;
-        // 5.2 toString - Wheel
-        for (var j = 0; j < outletWheelsLength; j++) {
-            outletCloned.children[7].children[j].children[2].textContent = "WHEELS HERE " + cars[i].wheels[j].diameter + " / " + cars[i].wheels[j].brand;
-            console.log(outletCloned.children[7].children[j].children[2]);
-        }
-        //
     }
+    else
+        outletList.innerHTML = ""; // OFF -> destroy List
 }
-// TEST
-cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2")];
-cars[0].wheels[0] = new Wheel(1.5, "Firestone");
-cars[0].wheels[1] = new Wheel(1.5, "Firestone");
-cars[0].wheels[2] = new Wheel(1.5, "Firestone");
-cars[0].wheels[3] = new Wheel(1.5, "Firestone");
-cars[1].wheels[0] = new Wheel(1.3, "Dunlop");
-cars[1].wheels[1] = new Wheel(1.3, "Dunlop");
-cars[1].wheels[2] = new Wheel(1.3, "Dunlop");
-cars[1].wheels[3] = new Wheel(1.3, "Dunlop");
+/* TEST */
+// cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2")];
+// cars[0].wheels[0] = new Wheel(1.5, "Firestone");
+// cars[0].wheels[1] = new Wheel(1.5, "Firestone");
+// cars[0].wheels[2] = new Wheel(1.5, "Firestone");
+// cars[0].wheels[3] = new Wheel(1.5, "Firestone");
+// cars[1].wheels[0] = new Wheel(1.3, "Dunlop");
+// cars[1].wheels[1] = new Wheel(1.3, "Dunlop");
+// cars[1].wheels[2] = new Wheel(1.3, "Dunlop");
+// cars[1].wheels[3] = new Wheel(1.3, "Dunlop");
