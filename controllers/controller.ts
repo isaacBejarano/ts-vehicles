@@ -36,31 +36,34 @@ const inputWheelBrandRR = document.getElementById("wheel_RR_brand") as HTMLInput
 // 3.2 wheelsLength -> validateDiameter + validateBeforeAddWheel
 const wheelsLength = formAddWheels.length - 1; // (+4 brands + 4 diameters -1 button)
 
-// 4.0 List Of Cars <button>
+// 4.0 Outlet - created Car
+const carInfo = document.getElementById("carInfo") as HTMLElement;
+
+// 4.1 Outlet - List Of Cars <button>
 const btnShowAllCars = document.getElementById("btn-show-all-cars") as HTMLButtonElement;
 
 /* EVENTS */
 
 // 1. validate "plate" + create Car
 formCreateCar.addEventListener("submit", function (e) {
-	validateBeforeCreateCar(e);
+  validateBeforeCreateCar(e);
 });
 
 // 2. validate "wheel" + add Wheel to Car
 formAddWheels.addEventListener("submit", function (e) {
-	validateBeforeAddWheel(e);
+  validateBeforeAddWheel(e);
 });
 
 // 3. Utility -> validate "plate" CSS
 inputPlate.addEventListener("blur", function () {
-	validateInputPlate(this);
+  validateInputPlate(this);
 });
 
 // 4. Utility -> validate "wheel.diameter" CSS
 for (let i = 0; i < wheelsLength; i += 2) {
-	formAddWheels.elements[i].addEventListener("blur", function () {
-		validateDiameter(formAddWheels.elements[i] as HTMLInputElement); // [i] -> [0, 2, 4, 6]
-	});
+  formAddWheels.elements[i].addEventListener("blur", function () {
+    validateDiameter(formAddWheels.elements[i] as HTMLInputElement); // [i] -> [0, 2, 4, 6]
+  });
 }
 
 // 5. Utility -> List of Cars
@@ -70,178 +73,179 @@ btnShowAllCars.addEventListener("click", showListOfCars);
 
 // 1. validate "plate" value
 function validateBeforeCreateCar(e: Event): void {
-	// (pre) style -> Case
-	const plate: string = inputPlate.value.toUpperCase();
-	const brand: string = FirstUpperCase(inputBrand.value);
-	const color: string = FirstUpperCase(inputColor.value);
+  // (pre) style -> Case
+  const plate: string = inputPlate.value.toUpperCase();
+  const brand: string = FirstUpperCase(inputBrand.value);
+  const color: string = FirstUpperCase(inputColor.value);
 
-	if (regexPlate.test(plate)) {
-		inputPlate.classList.remove("is-valid"); // clear CSS for next Car's Plate
-		createCar(e, plate, color, brand);
-	} else {
-		inputPlate.classList.add("is-invalid");
-		feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
-		e.preventDefault();
-		e.stopPropagation();
-	}
+  if (regexPlate.test(plate)) {
+    inputPlate.classList.remove("is-valid"); // clear CSS for next Car's Plate
+    createCar(e, plate, color, brand);
+  } else {
+    inputPlate.classList.add("is-invalid");
+    feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
+    e.preventDefault();
+    e.stopPropagation();
+  }
 }
 
 // 2. validate "wheel" value
 function validateBeforeAddWheel(e: Event): void {
-	let diameters: HTMLInputElement[] = [];
-	let brands: HTMLInputElement[] = [];
+  let diameters: HTMLInputElement[] = [];
+  let brands: HTMLInputElement[] = [];
 
-	let errorCount: number = 0;
+  let errorCount: number = 0;
 
-	for (let i = 0; i < wheelsLength; i += 2) {
-		let diameter = formAddWheels.elements[i] as HTMLInputElement; // [i] -> [0, 2, 4, 6]
-		let brand = formAddWheels.elements[i + 1] as HTMLInputElement; // [i] -> [1, 3, 5, 7]
-		let feedbackDiameter = document.querySelector(`[name = ${diameter.name}] ~ div.invalid-feedback`) as HTMLElement;
+  for (let i = 0; i < wheelsLength; i += 2) {
+    let diameter = formAddWheels.elements[i] as HTMLInputElement; // [i] -> [0, 2, 4, 6]
+    let brand = formAddWheels.elements[i + 1] as HTMLInputElement; // [i] -> [1, 3, 5, 7]
+    let feedbackDiameter = document.querySelector(`[name = ${diameter.name}] ~ div.invalid-feedback`) as HTMLElement;
 
-		diameters.push(diameter);
-		brands.push(brand);
+    diameters.push(diameter);
+    brands.push(brand);
 
-		// validate +Diameter (parsed int) CSS
-		if (+diameter.value <= 0.4 || +diameter.value >= 2) {
-			formAddWheels.elements[i].classList.add("is-invalid");
-			feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
-			errorCount++;
-		}
-	}
+    // validate +Diameter (parsed int) CSS
+    if (+diameter.value <= 0.4 || +diameter.value >= 2) {
+      formAddWheels.elements[i].classList.add("is-invalid");
+      feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
+      errorCount++;
+    }
+  }
 
-	// submit || prevent
-	errorCount === 0 ? addWheelsToCurrentCar(e, diameters, brands) : (e.preventDefault(), e.stopPropagation());
+  // submit || prevent
+  errorCount === 0 ? addWheelsToCurrentCar(e, diameters, brands) : (e.preventDefault(), e.stopPropagation());
 }
 
 /* LIB */
 
 function createCar(e: Event, plate: string, color: string, brand: string): void {
-	const car = new Car(plate, color, brand);
+  // new Car
+  const car = new Car(plate, color, brand);
+  // outlet
+  const outletCar = document.querySelectorAll("#carInfo p span") as NodeListOf<HTMLElement>; // <- plate, brand, color
 
-	// outlet
-	const carInfo = document.getElementById("carInfo") as HTMLElement;
-	const outletCar = document.querySelectorAll("#carInfo p span") as NodeListOf<HTMLElement>; // <- plate, brand, color
+  // 1. car of cars
+  cars.push(car);
 
-	// 1. car of cars
-	cars.push(car);
+  // 2. toString -> #carInfo p <span>
+  outletCar[0].textContent = `${cars.indexOf(car) + 1}`;
+  outletCar[1].textContent = car.plate;
+  outletCar[2].textContent = car.brand;
+  outletCar[3].textContent = car.color;
 
-	// 2. toString -> #carInfo p <span>
-	outletCar[0].textContent = `${cars.indexOf(car) + 1}`;
-	outletCar[1].textContent = car.plate;
-	outletCar[2].textContent = car.brand;
-	outletCar[3].textContent = car.color;
+  // 3. form's CSS
+  carInfo.classList.remove("is-none"); // diabled for the rest of life cycle
+  formCreateCar.classList.add("is-none");
+  formAddWheels.classList.remove("is-none");
 
-	// 3. form's CSS
-	carInfo.classList.remove("is-none"); // diabled for the rest of life cycle
-	formCreateCar.classList.add("is-none");
-	formAddWheels.classList.remove("is-none");
-
-	// 4. prevent submit + reset form for next Car's inputs
-	formPreventAndReset(e, formCreateCar);
+  // 4. prevent submit + reset form for next Car's inputs
+  formPreventAndReset(e, formCreateCar);
 }
 
 function addWheelsToCurrentCar(e: Event, diameters: HTMLInputElement[], brands: HTMLInputElement[]): void {
-	const length: number = diameters.length; // === brands.length
-	const outletWheel = document.querySelectorAll("#carInfo ul li span") as NodeListOf<HTMLSpanElement>; // <- diameter / brand
+  const length: number = diameters.length; // === brands.length
+  const outletWheel = document.querySelectorAll("#carInfo ul li span") as NodeListOf<HTMLSpanElement>; // <- diameter / brand
 
-	for (let i = 0; i < length; i++) {
-		let parsedDiameter: number = +diameters[i].value;
-		let capitalCasedBrand: string = FirstUpperCase(brands[i].value);
-		let wheel = new Wheel(parsedDiameter, capitalCasedBrand);
-		let brandToString: string = capitalCasedBrand !== "" ? capitalCasedBrand : "not specified";
+  for (let i = 0; i < length; i++) {
+    let parsedDiameter: number = +diameters[i].value;
+    let capitalCasedBrand: string = FirstUpperCase(brands[i].value);
+    let wheel = new Wheel(parsedDiameter, capitalCasedBrand);
+    let brandToString: string = capitalCasedBrand !== "" ? capitalCasedBrand : "not specified";
 
-		// 1. add Wheel to Car
-		cars[cars.length - 1].addWheel(wheel);
+    // 1. add Wheel to Car
+    cars[cars.length - 1].addWheel(wheel);
 
-		// 2. toString -> #carInfo ul li <span>
-		outletWheel[i].textContent = `Brand: ${brandToString} / Diameter: ${parsedDiameter}"`; // e.g. Firestone / 1.5"
-	}
+    // 2. toString -> #carInfo ul li <span>
+    outletWheel[i].textContent = `Brand: ${brandToString} / Diameter: ${parsedDiameter}"`; // e.g. Firestone / 1.5"
+  }
 
-	// 3. form's CSS
-	formCreateCar.classList.toggle("is-none"); // show Car's form for next Car's input
-	formAddWheels.classList.toggle("is-none"); // hide Wheel's form
+  // 3. form's CSS
+  formCreateCar.classList.toggle("is-none"); // show Car's form for next Car's input
+  formAddWheels.classList.toggle("is-none"); // hide Wheel's form
 
-	// 4. prevent submit + clear Wheel's for next Wheel's input
-	for (let i = 0; i < wheelsLength; i += 2) {
-		formAddWheels.elements[i].classList.remove("is-valid"); // clear inputs for next Wheel'sform
-	}
+  // 4. prevent submit + clear Wheel's for next Wheel's input
+  for (let i = 0; i < wheelsLength; i += 2) {
+    formAddWheels.elements[i].classList.remove("is-valid"); // clear inputs for next Wheel'sform
+  }
 
-	// 5. prevent submit + reset form for next Wheel's inputs
-	formPreventAndReset(e, formAddWheels);
+  // 5. prevent submit + reset form for next Wheel's inputs
+  formPreventAndReset(e, formAddWheels);
 }
 
 /* AUX */
 
 function FirstUpperCase(value: string): string {
-	return value.substr(0, 1).toUpperCase() + value.substr(1, value.length - 1).toLowerCase();
+  return value.substr(0, 1).toUpperCase() + value.substr(1, value.length - 1).toLowerCase();
 }
 
 function formPreventAndReset(e: Event, ref: HTMLFormElement): void {
-	e.preventDefault();
-	e.stopPropagation();
-	ref.reset();
+  e.preventDefault();
+  e.stopPropagation();
+  ref.reset();
 }
 
 /* UTILITY */
 
 // 3. validate "plate" CSS
 function validateInputPlate(plate: HTMLInputElement): void {
-	if (regexPlate.test(plate.value)) {
-		plate.classList.remove("is-invalid");
-		plate.classList.add("is-valid");
-	} else {
-		plate.classList.add("is-invalid");
-		feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
-	}
+  if (regexPlate.test(plate.value)) {
+    plate.classList.remove("is-invalid");
+    plate.classList.add("is-valid");
+  } else {
+    plate.classList.add("is-invalid");
+    feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
+  }
 }
 
 // 4. validate "wheel.diameter" CSS
 function validateDiameter(diameter: HTMLInputElement): void {
-	const feedbackDiameter = document.querySelector(`[name = ${diameter.name}] ~ div.invalid-feedback`) as HTMLElement;
+  const feedbackDiameter = document.querySelector(`[name = ${diameter.name}] ~ div.invalid-feedback`) as HTMLElement;
 
-	if (+diameter.value <= 0.4 || +diameter.value >= 2) {
-		diameter.classList.add("is-invalid");
-		feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
-	} else {
-		diameter.classList.remove("is-invalid");
-		diameter.classList.add("is-valid");
-	}
+  if (+diameter.value <= 0.4 || +diameter.value >= 2) {
+    diameter.classList.add("is-invalid");
+    feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
+  } else {
+    diameter.classList.remove("is-invalid");
+    diameter.classList.add("is-valid");
+  }
 }
 
 // 5. List of Cars
 function showListOfCars(): void {
-	const carsLength = cars.length;
+  const outletLength: number = cars.length;
+  const outletList = document.getElementById("list-all-cars") as HTMLElement;
 
-	/* ON */
-	// firstCar
-	const firstCar = document.getElementById("list-car-1") as HTMLElement;
-	const itemsCar = document.querySelectorAll(`#${firstCar.id} p span`) as NodeListOf<HTMLElement>; // <- plate, brand, color
-	const itemsWheel = document.querySelectorAll(`#${firstCar.id} ul li span`) as NodeListOf<HTMLSpanElement>; // <- diameter, brand
+  for (let i = 0; i < outletLength; i++) {
+    // 1. clone
+    let outletCloned = carInfo.cloneNode(true) as HTMLElement;
+    let outletWheelsLength: number = outletCloned.children[7].children.length;
 
-	// once cloned, change id
-	// firstCar.id = "nextstep";
-	firstCar.classList.toggle("is-none"); // ON / OFF
+    // 2. id + class
+    outletCloned.id = `carinfo-${i + 1}`;
+    outletCloned.classList.replace("bg-light", "bg-dark");
+    outletCloned.classList.replace("text-primary", "text-light");
 
-	let nextCar = firstCar.cloneNode(true) as HTMLElement;
-	nextCar.id = `list-car-2`;
-	nextCar.classList.add("is-none"); // ON / OFF
-	if (firstCar.nextElementSibling) firstCar.nextElementSibling.classList.toggle("is-none"); // ON / OFF
+    // 3. append cloned + toggle display
+    outletList.append(outletCloned);
+    outletCloned.classList.toggle("is-none");
 
-	console.log(nextCar);
+    // 4.1 CSS - Car <span>
+    outletCloned.children[0].children[1].classList.replace("text-dark", "text-light");
+    outletCloned.children[2].children[1].classList.replace("text-dark", "text-light");
+    outletCloned.children[3].children[1].classList.replace("text-dark", "text-light");
+    outletCloned.children[4].children[1].classList.replace("text-dark", "text-light");
 
-	firstCar.after(nextCar);
+    // 4.2 CSS - Wheels <span>
+    for (let j = 0; j < outletWheelsLength; j++) {
+      outletCloned.children[7].children[j].children[2].classList.replace("text-dark", "text-light");
+    }
 
-	nextCar.classList.toggle("is-none"); // ON / OFF
+    // 5.1 toString - Car
+    console.log(outletLength);
 
-	/* OFF */
-	// if (firstCar.classList.contains("is-none")) {
-	// 	console.log("deleting...");
-
-	// for (let i = 0; i < length; i++) {
-	// 	firstCar.after();
-	// }
-	// }
+    // 5.2 toString - Wheel
+  }
 }
 
 // TEST
-cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2"), new Car("car3", "3", "3")];
+cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2"), new Car("car3", "3", "3"), new Car("car4", "4", "4")];

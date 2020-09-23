@@ -28,7 +28,9 @@ var inputWheelDiameterRR = document.getElementById("wheel_RR_diameter");
 var inputWheelBrandRR = document.getElementById("wheel_RR_brand");
 // 3.2 wheelsLength -> validateDiameter + validateBeforeAddWheel
 var wheelsLength = formAddWheels.length - 1; // (+4 brands + 4 diameters -1 button)
-// 4.0 List Of Cars <button>
+// 4.0 Outlet - created Car
+var carInfo = document.getElementById("carInfo");
+// 4.1 Outlet - List Of Cars <button>
 var btnShowAllCars = document.getElementById("btn-show-all-cars");
 /* EVENTS */
 // 1. validate "plate" + create Car
@@ -95,9 +97,9 @@ function validateBeforeAddWheel(e) {
 }
 /* LIB */
 function createCar(e, plate, color, brand) {
+    // new Car
     var car = new Car(plate, color, brand);
     // outlet
-    var carInfo = document.getElementById("carInfo");
     var outletCar = document.querySelectorAll("#carInfo p span"); // <- plate, brand, color
     // 1. car of cars
     cars.push(car);
@@ -171,30 +173,32 @@ function validateDiameter(diameter) {
 }
 // 5. List of Cars
 function showListOfCars() {
-    var carsLength = cars.length;
-    /* ON */
-    // firstCar
-    var firstCar = document.getElementById("list-car-1");
-    var itemsCar = document.querySelectorAll("#" + firstCar.id + " p span"); // <- plate, brand, color
-    var itemsWheel = document.querySelectorAll("#" + firstCar.id + " ul li span"); // <- diameter, brand
-    // once cloned, change id
-    // firstCar.id = "nextstep";
-    firstCar.classList.toggle("is-none"); // ON / OFF
-    var nextCar = firstCar.cloneNode(true);
-    nextCar.id = "list-car-2";
-    nextCar.classList.add("is-none"); // ON / OFF
-    if (firstCar.nextElementSibling)
-        firstCar.nextElementSibling.classList.toggle("is-none"); // ON / OFF
-    console.log(nextCar);
-    firstCar.after(nextCar);
-    nextCar.classList.toggle("is-none"); // ON / OFF
-    /* OFF */
-    // if (firstCar.classList.contains("is-none")) {
-    // 	console.log("deleting...");
-    // for (let i = 0; i < length; i++) {
-    // 	firstCar.after();
-    // }
-    // }
+    var outletLength = cars.length;
+    var outletList = document.getElementById("list-all-cars");
+    for (var i = 0; i < outletLength; i++) {
+        // 1. clone
+        var outletCloned = carInfo.cloneNode(true);
+        var outletWheelsLength = outletCloned.children[7].children.length;
+        // 2. id + class
+        outletCloned.id = "carinfo-" + (i + 1);
+        outletCloned.classList.replace("bg-light", "bg-dark");
+        outletCloned.classList.replace("text-primary", "text-light");
+        // 3. append cloned + toggle display
+        outletList.append(outletCloned);
+        outletCloned.classList.toggle("is-none");
+        // 4.1 CSS - Car <span>
+        outletCloned.children[0].children[1].classList.replace("text-dark", "text-light");
+        outletCloned.children[2].children[1].classList.replace("text-dark", "text-light");
+        outletCloned.children[3].children[1].classList.replace("text-dark", "text-light");
+        outletCloned.children[4].children[1].classList.replace("text-dark", "text-light");
+        // 4.2 CSS - Wheels <span>
+        for (var j = 0; j < outletWheelsLength; j++) {
+            outletCloned.children[7].children[j].children[2].classList.replace("text-dark", "text-light");
+        }
+        // 5.1 toString - Car
+        console.log(outletLength);
+        // 5.2 toString - Wheel
+    }
 }
 // TEST
-cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2"), new Car("car3", "3", "3")];
+cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2"), new Car("car3", "3", "3"), new Car("car4", "4", "4")];
