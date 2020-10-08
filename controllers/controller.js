@@ -15,18 +15,15 @@ var regexPlate = new RegExp(/^([0-9]{4}\w{3})$/i); // "Plate" has 4 digits follo
 var feedbackPlate = document.querySelector("#" + inputPlate.id + " ~ div.invalid-feedback");
 // 3.1 Wheel's inputs
 var btnAddWheels = document.getElementById("btn_add_wheels");
-// btnAddWheels.addEventListener("click", function () {
-// 	alert("added");
-// });
-// const inputWheelBrandFL = document.getElementById("wheel_FL_brand") as HTMLInputElement;
-// const inputWheelDiameterFL = document.getElementById("wheel_FL_diameter") as HTMLInputElement;
-// const inputWheelDiameterFR = document.getElementById("wheel_FR_diameter") as HTMLInputElement;
-// const inputWheelBrandFR = document.getElementById("wheel_FR_brand") as HTMLInputElement;
-// const inputWheelDiameterRL = document.getElementById("wheel_RL_diameter") as HTMLInputElement;
-// const inputWheelBrandRL = document.getElementById("wheel_RL_brand") as HTMLInputElement;
-// const inputWheelDiameterRR = document.getElementById("wheel_RR_diameter") as HTMLInputElement;
-// const inputWheelBrandRR = document.getElementById("wheel_RR_brand") as HTMLInputElement;
-// 3.2 wheelsLength -> validateDiameter + validateBeforeAddWheel
+var inputWheelDiameter = document.getElementById("wheel-diameter");
+var inputWheelBrand = document.getElementById("wheel-brand");
+var feedbackWheelDiameter = document.querySelector("#" + inputWheelDiameter.id + " ~ div.invalid-feedback");
+var feedbackWheelBrand = document.querySelector("#" + inputWheelBrand.id + " ~ div.invalid-feedback");
+var alertWheelList = document.getElementById("wheel-list");
+var alertWheelSuccess = document.getElementById("wheel-success");
+feedbackWheelDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
+feedbackWheelBrand.textContent = "You didn't specify any \"Brand\"";
+// 3.2 wheelsLength -> validateDiameter + validateBeforeAddWheels
 var wheelsLength = formWheels.length - 1; // (+4 brands + 4 diameters -1 button)
 // 4.0 Outlet - created Car
 var carInfo = document.getElementById("carInfo");
@@ -37,34 +34,40 @@ var btnShowAllCars = document.getElementById("btn-show-all-cars");
 formCar.addEventListener("submit", function (e) {
     validateBeforeCreateCar(e);
 });
-// 2. validate "wheel" + add Wheel to Car
-formWheels.addEventListener("submit", function (e) {
-    validateBeforeAddWheel(e);
-});
 // 3. Utility -> validate "plate" CSS
-inputPlate.addEventListener("blur", function () {
+inputPlate.addEventListener("input", function () {
     validateInputPlate(this);
 });
-var _loop_1 = function (i) {
-    formWheels.elements[i].addEventListener("blur", function () {
-        validateDiameter(formWheels.elements[i]); // [i] -> [0, 2, 4, 6]
-    });
-};
 // 4. Utility -> validate "wheel.diameter" CSS
-for (var i = 0; i < wheelsLength; i += 2) {
-    _loop_1(i);
-}
-// 5. Utility -> List of Cars
+inputWheelDiameter.addEventListener("input", function () {
+    alertWheelSuccess.classList.add("d-none"); // clear previous success alert
+    validateWheelDiamater(this);
+});
+// 4. Utility -> validate "wheel.brand" CSS
+inputWheelBrand.addEventListener("input", function () {
+    alertWheelSuccess.classList.add("d-none"); // clear previous success alert
+    validateWheelBrand(this);
+});
+// 5. Utility -> validate "Wheel" values
+btnAddWheels.addEventListener("click", function () {
+    validateBeforeAddWheels();
+});
+// 6. Finish CRUD
+formWheels.addEventListener("submit", function () {
+    formWheels.classList.add("d-none");
+    outletWheels();
+});
+// 7. Utility -> List of Cars
 btnShowAllCars.addEventListener("click", showListOfCars);
 /* VALIDATION */
 // 1. validate "plate" value
 function validateBeforeCreateCar(e) {
+    inputPlate.classList.remove("is-valid"); // clear CSS for next Car's Plate
     // (pre) props -> Case
     var plate = inputPlate.value.toUpperCase();
     var brand = FirstUpperCase(inputBrand.value);
     var color = FirstUpperCase(inputColor.value);
     if (regexPlate.test(plate)) {
-        inputPlate.classList.remove("is-valid"); // clear CSS for next Car's Plate
         createCar(e, plate, brand, color);
     }
     else {
@@ -74,28 +77,58 @@ function validateBeforeCreateCar(e) {
         e.stopPropagation();
     }
 }
-// 2. validate "wheel" value
-function validateBeforeAddWheel(e) {
-    var diameters = [];
-    var brands = [];
-    var errorCount = 0;
-    var confirmed = confirm("saev aqll wheels?");
-    for (var i = 0; i < wheelsLength; i += 2) {
-        var diameter = formWheels.elements[i]; // [i] -> [0, 2, 4, 6]
-        var brand = formWheels.elements[i + 1]; // [i] -> [1, 3, 5, 7]
-        var feedbackDiameter = document.querySelector("[name = " + diameter.name + "] ~ div.invalid-feedback");
-        diameters.push(diameter);
-        brands.push(brand);
-        // (pre) prop diameter -> parse int
-        if (+diameter.value <= 0.4 || +diameter.value >= 2) {
-            formWheels.elements[i].classList.add("is-invalid");
-            feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
-            errorCount++;
+function validateBeforeAddWheels() {
+    var countError = 0;
+    if (validateWheelDiamater(inputWheelDiameter))
+        countError++;
+    if (validateWheelBrand(inputWheelBrand))
+        countError++;
+    if (countError === 0) {
+        // 1. add Wheels to Car
+        var lastCar = cars[cars.length - 1];
+        // prettier-ignore
+        lastCar.addWheel(new Wheel(+inputWheelDiameter.value, // parsed int
+        inputWheelBrand.value));
+        // 2. clear form
+        var formElements = formWheels.getElementsByTagName("input");
+        formWheels.reset(); // clear input values
+        for (var i = 0; i < formElements.length; i++) {
+            formElements[i].classList.remove("is-valid"); // clear input validation
         }
+        // 3. Wheel List toString
+        alertWheelList.classList.remove("d-none");
+        alertWheelSuccess.classList.remove("d-none");
+        // plate
+        alertWheelList.children[0].children[1].textContent = lastCar.plate;
+        // separator
+        if (lastCar.wheels.length > 0)
+            alertWheelList.children[1].children[0].textContent += " , ";
+        // diameter and brand
+        alertWheelList.children[1].children[0].textContent += "{\n\t\t\t" + lastCar.wheels[lastCar.wheels.length - 1].diameter + "\t:\n\t\t\t" + lastCar.wheels[lastCar.wheels.length - 1].brand + "\n\t\t}";
     }
-    // submit || prevent
-    errorCount === 0 ? addWheelsToCurrentCar(e, diameters, brands) : (e.preventDefault(), e.stopPropagation());
 }
+function outletWheels() {
+    var outletWheel = document.getElementById("#feedback-wheels");
+}
+// for (let i = 0; i < diametersLength; i++) {
+// 	let parsedDiameter: number = +diameters[i].value;
+// 	let capitalCasedBrand: string = FirstUpperCase(brands[i].value);
+// 	let wheel = new Wheel(parsedDiameter, capitalCasedBrand);
+// 	let brandToString: string = capitalCasedBrand !== "" ? capitalCasedBrand : "not specified";
+// 	// 1. add Wheel to Car
+// 	cars[cars.length - 1].addWheel(wheel);
+// 	// 2. toString -> #carInfo ul li <span>
+// 	outletWheel[i].textContent = `Brand: ${brandToString} / Diameter: ${parsedDiameter}"`; // e.g. Firestone / 1.5"
+// }
+// 3. form's CSS
+// formCar.classList.toggle("d-none"); // show Car's form for next Car's input
+// formWheels.classList.toggle("d-none"); // hide Wheel's form
+// 4. prevent submit + clear Wheel's for next Wheel's input
+// for (let i = 0; i < wheelsLength; i += 2) {
+// 	formWheels.elements[i].classList.remove("is-valid"); // clear inputs for next Wheel'sform
+// }
+// 5. prevent submit + reset form for next Wheel's inputs
+// formPreventAndReset(e, formWheels);
 /* LIB */
 function createCar(e, plate, brand, color) {
     // new Car + outlet for Car
@@ -115,29 +148,6 @@ function createCar(e, plate, brand, color) {
     // 4. prevent submit + reset form for next Car's inputs
     formPreventAndReset(e, formCar);
 }
-function addWheelsToCurrentCar(e, diameters, brands) {
-    var diametersLength = diameters.length; // === brands.length
-    var outletWheel = document.querySelectorAll("#carInfo ul li span"); // <- diameter / brand
-    for (var i = 0; i < diametersLength; i++) {
-        var parsedDiameter = +diameters[i].value;
-        var capitalCasedBrand = FirstUpperCase(brands[i].value);
-        var wheel = new Wheel(parsedDiameter, capitalCasedBrand);
-        var brandToString = capitalCasedBrand !== "" ? capitalCasedBrand : "not specified";
-        // 1. add Wheel to Car
-        cars[cars.length - 1].addWheel(wheel);
-        // 2. toString -> #carInfo ul li <span>
-        outletWheel[i].textContent = "Brand: " + brandToString + " / Diameter: " + parsedDiameter + "\""; // e.g. Firestone / 1.5"
-    }
-    // 3. form's CSS
-    formCar.classList.toggle("d-none"); // show Car's form for next Car's input
-    formWheels.classList.toggle("d-none"); // hide Wheel's form
-    // 4. prevent submit + clear Wheel's for next Wheel's input
-    for (var i = 0; i < wheelsLength; i += 2) {
-        formWheels.elements[i].classList.remove("is-valid"); // clear inputs for next Wheel'sform
-    }
-    // 5. prevent submit + reset form for next Wheel's inputs
-    formPreventAndReset(e, formWheels);
-}
 /* AUX */
 function FirstUpperCase(value) {
     return value.substr(0, 1).toUpperCase() + value.substr(1, value.length - 1).toLowerCase();
@@ -148,29 +158,53 @@ function formPreventAndReset(e, ref) {
     ref.reset();
 }
 /* UTILITY */
+// 4. validate "wheel.diameter" CSS
+function validateWheelDiamater(ref) {
+    if (+ref.value > 0.4 && +ref.value < 2) {
+        ref.classList.remove("is-invalid");
+        ref.classList.add("is-valid");
+    }
+    else {
+        ref.classList.add("is-invalid");
+        // feedbackWheelDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
+        return true; // error found
+    }
+}
+// 4. validate "wheel.diameter" CSS
+function validateWheelBrand(ref) {
+    if (+ref.value.length > 0) {
+        ref.classList.remove("is-invalid");
+        ref.classList.add("is-valid");
+    }
+    else {
+        ref.classList.add("is-invalid");
+        // feedbackWheelBrand.textContent = `You didn't specify any "Brand"`;
+        return true; // error found
+    }
+}
 // 3. validate "plate" CSS
 function validateInputPlate(plate) {
-    if (regexPlate.test(plate.value)) {
+    if (regexPlate.test(plate.value) && plate.value.length === 7) {
         plate.classList.remove("is-invalid");
         plate.classList.add("is-valid");
     }
     else {
         plate.classList.add("is-invalid");
+        plate.classList.remove("is-valid");
         feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
     }
 }
 // 4. validate "wheel.diameter" CSS
-function validateDiameter(diameter) {
-    var feedbackDiameter = document.querySelector("[name = " + diameter.name + "] ~ div.invalid-feedback");
-    if (+diameter.value <= 0.4 || +diameter.value >= 2) {
-        diameter.classList.add("is-invalid");
-        feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
-    }
-    else {
-        diameter.classList.remove("is-invalid");
-        diameter.classList.add("is-valid");
-    }
-}
+// function validateDiameter(diameter: HTMLInputElement): void {
+// 	const feedbackDiameter = document.querySelector(`[name = ${diameter.name}] ~ div.invalid-feedback`) as HTMLElement;
+// 	if (+diameter.value <= 0.4 || +diameter.value >= 2) {
+// 		diameter.classList.add("is-invalid");
+// 		feedbackDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
+// 	} else {
+// 		diameter.classList.remove("is-invalid");
+// 		diameter.classList.add("is-valid");
+// 	}
+// }
 // 5. List of Cars
 function showListOfCars() {
     var outletLength = cars.length;
