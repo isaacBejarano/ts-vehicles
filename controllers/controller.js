@@ -67,7 +67,7 @@ btnFinish.addEventListener("click", finish);
 // 2. "Wheel" <- validity to create
 btnAddWheels.addEventListener("click", validityToCreateWheel);
 // 3. "List of Cars" <- show/hide
-btnShowAllCars.addEventListener("click", showListOfCars);
+btnShowAllCars.addEventListener("click", renderListOfCars);
 /* LIB */
 function validityToCreateCar() {
     var errorCount = 0;
@@ -121,7 +121,7 @@ function validityToCreateWheel() {
         alertWheelSuccess.classList.remove("d-none");
         alertWheelDanger.classList.add("d-none");
         // 4. "Wheel Info"
-        wheelInfo.innerHTML += "\n\t\t\t<li>\n\t\t\t\t<i class=\"far fa-dot-circle\"></i>\n\t\t\t\t\t<span class=\"text-dark\">\n\t\t\t\t\t\tDiameter: " + inputWheelDiameter.value + "\".\n\t\t\t\t\t\tBrand: " + inputWheelBrand.value + "\n\t\t\t\t\t</span>\n\t\t\t</li>";
+        wheelInfo.innerHTML += "\n\t\t\t<li>\n\t\t\t\t<i class=\"far fa-dot-circle\"></i>\n\t\t\t\t\t<span class=\"text-dark\">\n\t\t\t\t\t\tdiameter: " + inputWheelDiameter.value + "\"\n\t\t\t\t\t\t/\n\t\t\t\t\t\tbrand: " + firstUpperCase(inputWheelBrand.value) + "\n\t\t\t\t\t</span>\n\t\t\t</li>";
         // 5 clear Wheel <form>
         formWheels.reset();
     }
@@ -161,59 +161,40 @@ function finish() {
     else
         alertWheelDanger.classList.remove("d-none");
 }
-function showListOfCars() {
-    var outletLength = cars.length;
+function renderListOfCars() {
     var outletList = document.getElementById("list-all-cars");
-    // ON -> create List + show
-    if (outletList.children.length === 0) {
-        for (var i = 0; i < outletLength; i++) {
-            // 1. clone
-            var outletCloned = carInfo.cloneNode(true);
-            var outletWheelsLength = outletCloned.children[7].children.length;
-            // 2. id + class
-            outletCloned.id = "carinfo-" + (i + 1);
-            outletCloned.classList.replace("bg-light", "bg-dark");
-            outletCloned.classList.replace("text-primary", "text-info");
-            // 3. append cloned + show List
-            outletList.append(outletCloned);
-            outletCloned.classList.remove("d-none");
-            // 4.1 CSS - Car <span>
-            outletCloned.children[0].children[1].classList.replace("text-dark", "text-light");
-            outletCloned.children[2].children[1].classList.replace("text-dark", "text-light");
-            outletCloned.children[3].children[1].classList.replace("text-dark", "text-light");
-            outletCloned.children[4].children[1].classList.replace("text-dark", "text-light");
-            // 4.2 CSS - Wheels <span>
-            for (var j = 0; j < outletWheelsLength; j++) {
-                outletCloned.children[7].children[j].children[2].classList.replace("text-dark", "text-light");
-            }
-            // 5.1 toString - existing Car props
-            outletCloned.children[0].children[1].textContent = "" + (i + 1);
-            outletCloned.children[2].children[1].textContent = cars[i].plate ? cars[i].plate : "not specified";
-            outletCloned.children[3].children[1].textContent = cars[i].brand ? cars[i].brand : "not specified";
-            outletCloned.children[4].children[1].textContent = cars[i].color ? cars[i].color : "not specified";
-            // 5.2 toString - existing Wheel props
-            for (var j = 0; j < outletWheelsLength; j++) {
-                // default values
-                var brandToString = "not specified";
-                var diameterToString = "not specified";
-                // <form> Wheel submited?
-                if (cars[i].wheels.length) {
-                    if (cars[i].wheels[j].brand !== "")
-                        brandToString = cars[i].wheels[j].brand;
-                    if (cars[i].wheels[j].diameter > 0)
-                        diameterToString = "" + cars[i].wheels[j].diameter; // stringified
-                }
-                // prettier-ignore
-                outletCloned
-                    .children[7]
-                    .children[j]
-                    .children[2]
-                    .textContent = "Brand: " + brandToString + " / Diameter: " + diameterToString + "\""; // e.g. Firestone / 1.5"
+    // destroy / construct list
+    if (outletList.children.length > 0)
+        outletList.innerHTML = "";
+    else {
+        for (var i = 0; i < cars.length; i++) {
+            // 1. clone HMTLElement + apend
+            var cloned = carInfo.cloneNode(true); // clone template <li>
+            outletList.append(cloned); // append section
+            cloned.id = "list-car-" + (i + 1); // <li> id
+            cloned.classList.remove("d-none");
+            // 2. id's for models
+            var modelInstance = document.querySelector("#list-car-" + (i + 1) + " #car-info-instance");
+            var modelPlate = document.querySelector("#list-car-" + (i + 1) + " #car-info-plate");
+            var modelBrand = document.querySelector("#list-car-" + (i + 1) + " #car-info-brand");
+            var modelColor = document.querySelector("#list-car-" + (i + 1) + " #car-info-color");
+            var modelWheel = document.querySelector("#list-car-" + (i + 1) + " #wheel-info");
+            modelInstance.id = "model-instance-" + (i + 1);
+            modelPlate.id = "model-plate-" + (i + 1);
+            modelBrand.id = "model-max-brand-" + (i + 1);
+            modelColor.id = "model-current-color-" + (i + 1);
+            modelWheel.id = "wheel-info-" + (i + 1);
+            // 3. <li> inject data into models
+            modelInstance.textContent = "" + (i + 1);
+            modelPlate.textContent = cars[i].plate;
+            modelBrand.textContent = cars[i].brand;
+            modelColor.textContent = cars[i].color;
+            for (var _i = 0, _a = cars[i].wheels; _i < _a.length; _i++) {
+                var wheel = _a[_i];
+                modelWheel.innerHTML += "\n\t\t\t\t<li>\n\t\t\t\t\t<i class=\"far fa-dot-circle\"></i>\n\t\t\t\t\t<span class=\"text-dark\">\n\t\t\t\t\t\tdiameter: " + wheel.diameter + "\"\n\t\t\t\t\t\t/\n\t\t\t\t\t\tbrand: " + wheel.brand + "\n\t\t\t\t\t</span>\n\t\t\t\t</li>";
             }
         }
     }
-    else
-        outletList.innerHTML = ""; // OFF -> destroy List
 }
 /* UTILITY */
 function firstUpperCase(value) {
@@ -225,12 +206,16 @@ function feedback(ref, condition) {
         : (ref.classList.remove("is-valid"), ref.classList.add("is-invalid"));
 }
 /* TEST */
-// cars = [new Car("car1", "1", "1"), new Car("car2", "2", "2")];
-// cars[0].wheels[0] = new Wheel(1.5, "Firestone");
-// cars[0].wheels[1] = new Wheel(1.5, "Firestone");
-// cars[0].wheels[2] = new Wheel(1.5, "Firestone");
-// cars[0].wheels[3] = new Wheel(1.5, "Firestone");
-// cars[1].wheels[0] = new Wheel(1.3, "Dunlop");
-// cars[1].wheels[1] = new Wheel(1.3, "Dunlop");
-// cars[1].wheels[2] = new Wheel(1.3, "Dunlop");
-// cars[1].wheels[3] = new Wheel(1.3, "Dunlop");
+// cars = [
+// 	// prettier-ignore
+// 	new Car("test-car1", "test-brand1", "test-color1"),
+// 	new Car("test-car2", "test-brand2", "test-color2"),
+// ];
+// cars[0].addWheel(new Wheel(1.1, "Firestone"));
+// cars[0].addWheel(new Wheel(1.2, "Firestone"));
+// cars[0].addWheel(new Wheel(1.3, "Firestone"));
+// cars[0].addWheel(new Wheel(1.4, "Firestone"));
+// cars[1].addWheel(new Wheel(1.5, "Firestone"));
+// cars[1].addWheel(new Wheel(1.6, "Firestone"));
+// cars[1].addWheel(new Wheel(1.7, "Firestone"));
+// cars[1].addWheel(new Wheel(1.8, "Firestone"));
