@@ -15,11 +15,10 @@ const validPlate = (value: string): boolean => new RegExp(/^([0-9]{4}[a-z]{3})$/
 const inputPlate = document.getElementById("input-plate") as HTMLInputElement;
 const feedbackPlate = document.querySelector(`#${inputPlate.id} ~ div.invalid-feedback`) as HTMLElement;
 feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
-const validBrand = (value: string): boolean => (value !== "" ? true : false);
+const validIfNotEmpty = (value: string): boolean => new RegExp(/\w/i).test(value);
 const inputBrand = document.getElementById("input-brand") as HTMLInputElement;
 const feedbackBrand = document.querySelector(`#${inputBrand.id} ~ div.invalid-feedback`) as HTMLElement;
 feedbackBrand.textContent = 'Please, fill in the "Brand" field';
-const validColor = (value: string): boolean => (value !== "" ? true : false);
 const inputColor = document.getElementById("input-color") as HTMLInputElement;
 const feedbackColor = document.querySelector(`#${inputColor.id} ~ div.invalid-feedback`) as HTMLElement;
 feedbackColor.textContent = 'Please, fill in the "Color" field';
@@ -35,7 +34,6 @@ const validWheelDiameter = (value: number): boolean => (+value > 0.4 && +value <
 const inputWheelDiameter = document.getElementById("wheel-diameter") as HTMLInputElement;
 const feedbackWheelDiameter = document.querySelector(`#${inputWheelDiameter.id} ~ div.invalid-feedback`) as HTMLElement;
 feedbackWheelDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
-const validWheelBrand = (value: string): boolean => (value.length > 0 ? true : false);
 const inputWheelBrand = document.getElementById("wheel-brand") as HTMLInputElement;
 const feedbackWheelBrand = document.querySelector(`#${inputWheelBrand.id} ~ div.invalid-feedback`) as HTMLElement;
 feedbackWheelBrand.textContent = `You didn't specify any "Brand"`;
@@ -50,10 +48,10 @@ inputPlate.addEventListener("blur", function () {
 	feedback(this, validPlate(this.value));
 });
 inputBrand.addEventListener("blur", function () {
-	feedback(this, validBrand(this.value));
+	feedback(this, validIfNotEmpty(this.value));
 });
 inputColor.addEventListener("blur", function () {
-	feedback(this, validColor(this.value));
+	feedback(this, validIfNotEmpty(this.value));
 });
 
 // 1. "Car" <- validity to create
@@ -64,7 +62,7 @@ inputWheelDiameter.addEventListener("blur", function () {
 	feedback(this, validWheelDiameter(+this.value));
 });
 inputWheelBrand.addEventListener("blur", function () {
-	feedback(this, validWheelBrand(this.value));
+	feedback(this, validIfNotEmpty(this.value));
 });
 
 // 2. "Wheel" -> remove Alerts
@@ -90,11 +88,11 @@ function validityToCreateCar(): void {
 		inputPlate.classList.add("is-invalid");
 		errorCount++;
 	}
-	if (!validBrand(inputBrand.value)) {
+	if (!validIfNotEmpty(inputBrand.value)) {
 		inputBrand.classList.add("is-invalid");
 		errorCount++;
 	}
-	if (!validColor(inputColor.value)) {
+	if (!validIfNotEmpty(inputColor.value)) {
 		inputColor.classList.add("is-invalid");
 		errorCount++;
 	}
@@ -106,8 +104,8 @@ function validityToCreateCar(): void {
 			new Car(
 				// prettier-ignore
 				inputPlate.value.toUpperCase(),
-				firstUpperCase(inputBrand.value),
-				firstUpperCase(inputColor.value)
+				firstUpperCase(inputBrand.value.trim()),
+				firstUpperCase(inputColor.value.trim())
 			)
 		);
 		// 2. spot last "Car" created
@@ -133,14 +131,14 @@ function validityToCreateWheel(): void {
 	inputWheelDiameter.classList.remove("is-valid"); // (pre) clear CSS
 	inputWheelBrand.classList.remove("is-valid"); // (pre) clear CSS
 
-	if (validWheelDiameter(+inputWheelDiameter.value) && validWheelBrand(inputWheelBrand.value)) {
+	if (validWheelDiameter(+inputWheelDiameter.value) && validIfNotEmpty(inputWheelBrand.value)) {
 		// 1. spot last "Car" created
 		lastCar = cars[cars.length - 1];
 		// 2. add wheels
 		lastCar.addWheel(
 			new Wheel(
 				+inputWheelDiameter.value, // parsed int
-				firstUpperCase(inputWheelBrand.value)
+				firstUpperCase(inputWheelBrand.value.trim())
 			)
 		);
 		// 3. wheel alert state
@@ -153,7 +151,7 @@ function validityToCreateWheel(): void {
 					<span class="text-dark">
 						diameter: ${inputWheelDiameter.value}"
 						/
-						brand: ${firstUpperCase(inputWheelBrand.value)}
+						brand: ${firstUpperCase(inputWheelBrand.value.trim())}
 					</span>
 			</li>`;
 		// 5 clear Wheel <form>
@@ -164,7 +162,7 @@ function validityToCreateWheel(): void {
 		alertWheelDanger.classList.remove("d-none");
 		// 2. induce CSS onblur validation
 		if (!validWheelDiameter(+inputWheelDiameter.value)) inputWheelDiameter.classList.add("is-invalid");
-		if (!validWheelBrand(inputWheelBrand.value)) inputWheelBrand.classList.add("is-invalid");
+		if (!validIfNotEmpty(inputWheelBrand.value)) inputWheelBrand.classList.add("is-invalid");
 	}
 }
 
@@ -200,19 +198,26 @@ function renderListOfCars(): void {
 	if (outletList.children.length > 0) outletList.innerHTML = "";
 	else {
 		for (let i = 0; i < cars.length; i++) {
-			// 1. clone HMTLElement + apend
-			const cloned = carInfo.cloneNode(true) as HTMLLIElement; // clone template <li>
+			// 1. <div> clone + append + style
+			const cloned = carInfo.cloneNode(true) as HTMLLIElement; // clone template <div>
+			outletList.append(cloned);
 
-			outletList.append(cloned); // append section
-			cloned.id = `list-car-${i + 1}`; // <li> id
+			cloned.id = `list-car-${i + 1}`;
+			cloned.classList.replace("bg-light", "bg-dark");
 			cloned.classList.remove("d-none");
 
-			// 2. id's for models
-			const modelInstance = document.querySelector(`#list-car-${i + 1} #car-info-instance`) as HTMLSpanElement;
-			const modelPlate = document.querySelector(`#list-car-${i + 1} #car-info-plate`) as HTMLSpanElement;
-			const modelBrand = document.querySelector(`#list-car-${i + 1} #car-info-brand`) as HTMLSpanElement;
-			const modelColor = document.querySelector(`#list-car-${i + 1} #car-info-color`) as HTMLSpanElement;
-			const modelWheel = document.querySelector(`#list-car-${i + 1} #wheel-info`) as HTMLOListElement;
+			// 2. <p> CSS
+			const clonedPs = cloned.querySelectorAll("p") as NodeListOf<HTMLParagraphElement>;
+			clonedPs.forEach(p => {
+				p.classList.add("text-info");
+			});
+
+			// 3. <span> models id
+			const modelInstance = cloned.querySelector("#car-info-instance") as HTMLSpanElement;
+			const modelPlate = cloned.querySelector("#car-info-plate") as HTMLSpanElement;
+			const modelBrand = cloned.querySelector("#car-info-brand") as HTMLSpanElement;
+			const modelColor = cloned.querySelector("#car-info-color") as HTMLSpanElement;
+			const modelWheel = cloned.querySelector("#wheel-info") as HTMLOListElement;
 
 			modelInstance.id = `model-instance-${i + 1}`;
 			modelPlate.id = `model-plate-${i + 1}`;
@@ -220,22 +225,37 @@ function renderListOfCars(): void {
 			modelColor.id = `model-current-color-${i + 1}`;
 			modelWheel.id = `wheel-info-${i + 1}`;
 
-			// 3. <li> inject data into models
+			// 3. <span> models CSS
+			modelInstance.classList.replace("text-dark", "text-light");
+			modelPlate.classList.replace("text-dark", "text-light");
+			modelBrand.classList.replace("text-dark", "text-light");
+			modelColor.classList.replace("text-dark", "text-light");
+			modelWheel.classList.replace("text-dark", "text-light");
+
+			// 3. <span> modles data
 			modelInstance.textContent = `${i + 1}`;
 			modelPlate.textContent = cars[i].plate;
 			modelBrand.textContent = cars[i].brand;
 			modelColor.textContent = cars[i].color;
+
 			for (let wheel of cars[i].wheels) {
 				modelWheel.innerHTML += `
-				<li>
+				<li class="text-info">
 					<i class="far fa-dot-circle"></i>
-					<span class="text-dark">
+					<span class="text-light">
 						diameter: ${wheel.diameter}"
 						/
 						brand: ${wheel.brand}
 					</span>
 				</li>`;
 			}
+
+			// 6. divisors CSS
+			const divisiors = cloned.querySelectorAll("div.border") as NodeListOf<HTMLDivElement>;
+
+			divisiors.forEach(divisior => {
+				divisior.classList.replace("border", "border-info");
+			});
 		}
 	}
 }
@@ -255,17 +275,14 @@ function feedback(ref: HTMLElement, condition: boolean): void {
 /* TEST */
 
 // cars = [
-// 	// prettier-ignore
-// 	new Car("test-car1", "test-brand1", "test-color1"),
-// 	new Car("test-car2", "test-brand2", "test-color2"),
+// 	new Car("0001TST", "Test-brand-1", "Test-color-1"),
+// 	new Car("0002TST", "Test-brand-2", "Test-color-2"),
 // ];
 
 // cars[0].addWheel(new Wheel(1.1, "Firestone"));
 // cars[0].addWheel(new Wheel(1.2, "Firestone"));
-// cars[0].addWheel(new Wheel(1.3, "Firestone"));
-// cars[0].addWheel(new Wheel(1.4, "Firestone"));
 
-// cars[1].addWheel(new Wheel(1.5, "Firestone"));
-// cars[1].addWheel(new Wheel(1.6, "Firestone"));
-// cars[1].addWheel(new Wheel(1.7, "Firestone"));
-// cars[1].addWheel(new Wheel(1.8, "Firestone"));
+// cars[1].addWheel(new Wheel(1.3, "Dunlop"));
+// cars[1].addWheel(new Wheel(1.4, "Dunlop"));
+// cars[1].addWheel(new Wheel(1.5, "Dunlop"));
+// cars[1].addWheel(new Wheel(1.6, "Dunlop"));

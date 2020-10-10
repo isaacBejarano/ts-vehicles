@@ -14,11 +14,10 @@ var validPlate = function (value) { return new RegExp(/^([0-9]{4}[a-z]{3})$/i).t
 var inputPlate = document.getElementById("input-plate");
 var feedbackPlate = document.querySelector("#" + inputPlate.id + " ~ div.invalid-feedback");
 feedbackPlate.textContent = '"Plate" must have 4 digits followed by 3 letters';
-var validBrand = function (value) { return (value !== "" ? true : false); };
+var validIfNotEmpty = function (value) { return new RegExp(/\w/i).test(value); };
 var inputBrand = document.getElementById("input-brand");
 var feedbackBrand = document.querySelector("#" + inputBrand.id + " ~ div.invalid-feedback");
 feedbackBrand.textContent = 'Please, fill in the "Brand" field';
-var validColor = function (value) { return (value !== "" ? true : false); };
 var inputColor = document.getElementById("input-color");
 var feedbackColor = document.querySelector("#" + inputColor.id + " ~ div.invalid-feedback");
 feedbackColor.textContent = 'Please, fill in the "Color" field';
@@ -33,7 +32,6 @@ var validWheelDiameter = function (value) { return (+value > 0.4 && +value < 2 ?
 var inputWheelDiameter = document.getElementById("wheel-diameter");
 var feedbackWheelDiameter = document.querySelector("#" + inputWheelDiameter.id + " ~ div.invalid-feedback");
 feedbackWheelDiameter.textContent = '"Diameter" must be bigger than 0.4" and smaller then 2"';
-var validWheelBrand = function (value) { return (value.length > 0 ? true : false); };
 var inputWheelBrand = document.getElementById("wheel-brand");
 var feedbackWheelBrand = document.querySelector("#" + inputWheelBrand.id + " ~ div.invalid-feedback");
 feedbackWheelBrand.textContent = "You didn't specify any \"Brand\"";
@@ -45,10 +43,10 @@ inputPlate.addEventListener("blur", function () {
     feedback(this, validPlate(this.value));
 });
 inputBrand.addEventListener("blur", function () {
-    feedback(this, validBrand(this.value));
+    feedback(this, validIfNotEmpty(this.value));
 });
 inputColor.addEventListener("blur", function () {
-    feedback(this, validColor(this.value));
+    feedback(this, validIfNotEmpty(this.value));
 });
 // 1. "Car" <- validity to create
 btnCreateCar.addEventListener("click", validityToCreateCar);
@@ -57,7 +55,7 @@ inputWheelDiameter.addEventListener("blur", function () {
     feedback(this, validWheelDiameter(+this.value));
 });
 inputWheelBrand.addEventListener("blur", function () {
-    feedback(this, validWheelBrand(this.value));
+    feedback(this, validIfNotEmpty(this.value));
 });
 // 2. "Wheel" -> remove Alerts
 inputWheelDiameter.addEventListener("focus", function () { return alertWheelSuccess.classList.add("d-none"); });
@@ -76,11 +74,11 @@ function validityToCreateCar() {
         inputPlate.classList.add("is-invalid");
         errorCount++;
     }
-    if (!validBrand(inputBrand.value)) {
+    if (!validIfNotEmpty(inputBrand.value)) {
         inputBrand.classList.add("is-invalid");
         errorCount++;
     }
-    if (!validColor(inputColor.value)) {
+    if (!validIfNotEmpty(inputColor.value)) {
         inputColor.classList.add("is-invalid");
         errorCount++;
     }
@@ -89,7 +87,7 @@ function validityToCreateCar() {
         // 1. create Car
         cars.push(new Car(
         // prettier-ignore
-        inputPlate.value.toUpperCase(), firstUpperCase(inputBrand.value), firstUpperCase(inputColor.value)));
+        inputPlate.value.toUpperCase(), firstUpperCase(inputBrand.value.trim()), firstUpperCase(inputColor.value.trim())));
         // 2. spot last "Car" created
         lastCar = cars[cars.length - 1];
         // 3. "Car Info"
@@ -111,17 +109,17 @@ function validityToCreateCar() {
 function validityToCreateWheel() {
     inputWheelDiameter.classList.remove("is-valid"); // (pre) clear CSS
     inputWheelBrand.classList.remove("is-valid"); // (pre) clear CSS
-    if (validWheelDiameter(+inputWheelDiameter.value) && validWheelBrand(inputWheelBrand.value)) {
+    if (validWheelDiameter(+inputWheelDiameter.value) && validIfNotEmpty(inputWheelBrand.value)) {
         // 1. spot last "Car" created
         lastCar = cars[cars.length - 1];
         // 2. add wheels
         lastCar.addWheel(new Wheel(+inputWheelDiameter.value, // parsed int
-        firstUpperCase(inputWheelBrand.value)));
+        firstUpperCase(inputWheelBrand.value.trim())));
         // 3. wheel alert state
         alertWheelSuccess.classList.remove("d-none");
         alertWheelDanger.classList.add("d-none");
         // 4. "Wheel Info"
-        wheelInfo.innerHTML += "\n\t\t\t<li>\n\t\t\t\t<i class=\"far fa-dot-circle\"></i>\n\t\t\t\t\t<span class=\"text-dark\">\n\t\t\t\t\t\tdiameter: " + inputWheelDiameter.value + "\"\n\t\t\t\t\t\t/\n\t\t\t\t\t\tbrand: " + firstUpperCase(inputWheelBrand.value) + "\n\t\t\t\t\t</span>\n\t\t\t</li>";
+        wheelInfo.innerHTML += "\n\t\t\t<li>\n\t\t\t\t<i class=\"far fa-dot-circle\"></i>\n\t\t\t\t\t<span class=\"text-dark\">\n\t\t\t\t\t\tdiameter: " + inputWheelDiameter.value + "\"\n\t\t\t\t\t\t/\n\t\t\t\t\t\tbrand: " + firstUpperCase(inputWheelBrand.value.trim()) + "\n\t\t\t\t\t</span>\n\t\t\t</li>";
         // 5 clear Wheel <form>
         formWheels.reset();
     }
@@ -132,7 +130,7 @@ function validityToCreateWheel() {
         // 2. induce CSS onblur validation
         if (!validWheelDiameter(+inputWheelDiameter.value))
             inputWheelDiameter.classList.add("is-invalid");
-        if (!validWheelBrand(inputWheelBrand.value))
+        if (!validIfNotEmpty(inputWheelBrand.value))
             inputWheelBrand.classList.add("is-invalid");
     }
 }
@@ -168,31 +166,48 @@ function renderListOfCars() {
         outletList.innerHTML = "";
     else {
         for (var i = 0; i < cars.length; i++) {
-            // 1. clone HMTLElement + apend
-            var cloned = carInfo.cloneNode(true); // clone template <li>
-            outletList.append(cloned); // append section
-            cloned.id = "list-car-" + (i + 1); // <li> id
+            // 1. <div> clone + append + style
+            var cloned = carInfo.cloneNode(true); // clone template <div>
+            outletList.append(cloned);
+            cloned.id = "list-car-" + (i + 1);
+            cloned.classList.replace("bg-light", "bg-dark");
             cloned.classList.remove("d-none");
-            // 2. id's for models
-            var modelInstance = document.querySelector("#list-car-" + (i + 1) + " #car-info-instance");
-            var modelPlate = document.querySelector("#list-car-" + (i + 1) + " #car-info-plate");
-            var modelBrand = document.querySelector("#list-car-" + (i + 1) + " #car-info-brand");
-            var modelColor = document.querySelector("#list-car-" + (i + 1) + " #car-info-color");
-            var modelWheel = document.querySelector("#list-car-" + (i + 1) + " #wheel-info");
+            // 2. <p> CSS
+            var clonedPs = cloned.querySelectorAll("p");
+            clonedPs.forEach(function (p) {
+                p.classList.add("text-info");
+            });
+            // 3. <span> models id
+            var modelInstance = cloned.querySelector("#car-info-instance");
+            var modelPlate = cloned.querySelector("#car-info-plate");
+            var modelBrand = cloned.querySelector("#car-info-brand");
+            var modelColor = cloned.querySelector("#car-info-color");
+            var modelWheel = cloned.querySelector("#wheel-info");
             modelInstance.id = "model-instance-" + (i + 1);
             modelPlate.id = "model-plate-" + (i + 1);
             modelBrand.id = "model-max-brand-" + (i + 1);
             modelColor.id = "model-current-color-" + (i + 1);
             modelWheel.id = "wheel-info-" + (i + 1);
-            // 3. <li> inject data into models
+            // 3. <span> models CSS
+            modelInstance.classList.replace("text-dark", "text-light");
+            modelPlate.classList.replace("text-dark", "text-light");
+            modelBrand.classList.replace("text-dark", "text-light");
+            modelColor.classList.replace("text-dark", "text-light");
+            modelWheel.classList.replace("text-dark", "text-light");
+            // 3. <span> modles data
             modelInstance.textContent = "" + (i + 1);
             modelPlate.textContent = cars[i].plate;
             modelBrand.textContent = cars[i].brand;
             modelColor.textContent = cars[i].color;
             for (var _i = 0, _a = cars[i].wheels; _i < _a.length; _i++) {
                 var wheel = _a[_i];
-                modelWheel.innerHTML += "\n\t\t\t\t<li>\n\t\t\t\t\t<i class=\"far fa-dot-circle\"></i>\n\t\t\t\t\t<span class=\"text-dark\">\n\t\t\t\t\t\tdiameter: " + wheel.diameter + "\"\n\t\t\t\t\t\t/\n\t\t\t\t\t\tbrand: " + wheel.brand + "\n\t\t\t\t\t</span>\n\t\t\t\t</li>";
+                modelWheel.innerHTML += "\n\t\t\t\t<li class=\"text-info\">\n\t\t\t\t\t<i class=\"far fa-dot-circle\"></i>\n\t\t\t\t\t<span class=\"text-light\">\n\t\t\t\t\t\tdiameter: " + wheel.diameter + "\"\n\t\t\t\t\t\t/\n\t\t\t\t\t\tbrand: " + wheel.brand + "\n\t\t\t\t\t</span>\n\t\t\t\t</li>";
             }
+            // 6. divisors CSS
+            var divisiors = cloned.querySelectorAll("div.border");
+            divisiors.forEach(function (divisior) {
+                divisior.classList.replace("border", "border-info");
+            });
         }
     }
 }
@@ -207,15 +222,12 @@ function feedback(ref, condition) {
 }
 /* TEST */
 // cars = [
-// 	// prettier-ignore
-// 	new Car("test-car1", "test-brand1", "test-color1"),
-// 	new Car("test-car2", "test-brand2", "test-color2"),
+// 	new Car("0001TST", "Test-brand-1", "Test-color-1"),
+// 	new Car("0002TST", "Test-brand-2", "Test-color-2"),
 // ];
 // cars[0].addWheel(new Wheel(1.1, "Firestone"));
 // cars[0].addWheel(new Wheel(1.2, "Firestone"));
-// cars[0].addWheel(new Wheel(1.3, "Firestone"));
-// cars[0].addWheel(new Wheel(1.4, "Firestone"));
-// cars[1].addWheel(new Wheel(1.5, "Firestone"));
-// cars[1].addWheel(new Wheel(1.6, "Firestone"));
-// cars[1].addWheel(new Wheel(1.7, "Firestone"));
-// cars[1].addWheel(new Wheel(1.8, "Firestone"));
+// cars[1].addWheel(new Wheel(1.3, "Dunlop"));
+// cars[1].addWheel(new Wheel(1.4, "Dunlop"));
+// cars[1].addWheel(new Wheel(1.5, "Dunlop"));
+// cars[1].addWheel(new Wheel(1.6, "Dunlop"));
